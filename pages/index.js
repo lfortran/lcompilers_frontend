@@ -69,6 +69,11 @@ export default function Home() {
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
+            if(sourceCode.trim() === ""){
+                setOutput("No Source Code to compile");
+                setActiveTab(key);
+                return;
+            }
             const wasm_bytes_response = lfortran_funcs.compile_code(sourceCode);
             if (wasm_bytes_response) {
                 const [exit_code, ...compile_result] = wasm_bytes_response.split(",");
