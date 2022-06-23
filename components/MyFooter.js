@@ -26,12 +26,10 @@ function MyFooter() {
                 color: "#fff",
                 padding: "10px 0px",
                 textAlign: "center",
-                position: "absolute",
-                bottom: "0px",
                 width: "100%",
             }}
         >
-            LFortran by LCompilers
+            <a href="https://lfortran.org/">LFortran</a> by <a href="https://lcompilers.org/">LCompilers</a>
         </Footer>
     );
 }

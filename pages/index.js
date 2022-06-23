@@ -57,9 +57,13 @@ export default function Home() {
     const [myHeight, setMyHeight] = useState(0)
 
     useEffect(() => {
-        const minHeightWidht = (window.innerWidth < window.innerHeight) ? window.innerWidth : window.innerHeight;
-        setMyHeight(0.74 * minHeightWidht);
-        console.log(minHeightWidht)
+        const updateMyHeight = () => {
+            const minHeightWidht = (window.innerWidth < window.innerHeight) ? window.innerWidth - 40 : window.innerHeight - 182;
+            setMyHeight(minHeightWidht);
+        }
+        window.addEventListener("resize", updateMyHeight);
+        updateMyHeight();
+        return () => window.removeEventListener("resize", updateMyHeight)
     }, [])
 
 
