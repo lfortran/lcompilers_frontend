@@ -10,7 +10,7 @@ function MyLayout({ children }) {
             <Content style={{ padding: "10px 20px" }}>
                 {children}
             </Content>
-            <MyFooter></MyFooter>
+            {/* <MyFooter></MyFooter> */}
         </Layout>
     );
 }

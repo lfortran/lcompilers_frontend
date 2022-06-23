@@ -1,2 +1,6 @@
 /* @import '~antd/dist/antd.dark.css'; */
 @import "~antd/dist/antd.css";
+
+.ant-tabs-content{
+    height: 100%;
+}

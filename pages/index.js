@@ -3,6 +3,7 @@ import ResultBox from "../components/ResultBox";
 import LoadLFortran from "../components/LoadLFortran";
 import remove_ansi_escape_seq from "../utils/ast_asr_handler";
 
+import { useEffect } from "react";
 import { useState } from "react";
 import { Col, Row, Spin } from "antd";
 import { notification } from "antd";
@@ -52,12 +53,20 @@ export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
     const [sourceCode, setSourceCode] = useState(initial_source_code);
     const [activeTab, setActiveTab] = useState("STDOUT");
-    const [output, setOutput] = useState("25");
+    const [output, setOutput] = useState("");
+    const [myHeight, setMyHeight] = useState(0)
+
+    useEffect(() => {
+        const minHeightWidht = (window.innerWidth < window.innerHeight) ? window.innerWidth : window.innerHeight;
+        setMyHeight(0.74 * minHeightWidht);
+        console.log(minHeightWidht)
+    }, [])
+
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
             const wasm_bytes_response = lfortran_funcs.compile_code(sourceCode);
-            if(wasm_bytes_response){
+            if (wasm_bytes_response) {
                 const [exit_code, ...compile_result] = wasm_bytes_response.split(",");
                 if (exit_code !== "0") {
                     setOutput(ansi_up.ansi_to_html(compile_result)); // print compile-time error found by lfortran to output
@@ -114,24 +123,27 @@ export default function Home() {
                 lfortran_funcs={lfortran_funcs}
                 openNotification={openNotification}
                 myPrint={setOutput}
+                handleUserTabChange={handleUserTabChange}
             ></LoadLFortran>
 
             <Row gutter={[16, 16]}>
-                <Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 12 }}>
+                <Col xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 12 }}>
                     <TextBox
                         disabled={!moduleReady}
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
                         activeTab={activeTab}
                         handleUserTabChange={handleUserTabChange}
+                        myHeight={myHeight}
                     ></TextBox>
                 </Col>
-                <Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 12 }}>
+                <Col xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 12 }}>
                     {moduleReady ? (
                         <ResultBox
                             activeTab={activeTab}
                             output={output}
                             handleUserTabChange={handleUserTabChange}
+                            myHeight={myHeight}
                         ></ResultBox>
                     ) : (
                         <Spin

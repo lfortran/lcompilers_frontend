@@ -154,13 +154,15 @@ function LoadLFortran({
     setModuleReady,
     lfortran_funcs,
     openNotification,
-    myPrint
+    myPrint,
+    handleUserTabChange
 }) {
-    const setupLFortran = useCallback(() => {
-        setup_lfortran_funcs(lfortran_funcs, myPrint);
+    const setupLFortran = useCallback(async () => {
+        await setup_lfortran_funcs(lfortran_funcs, myPrint);
         setModuleReady(true);
         openNotification("LFortran Module Initialized!", "bottomRight");
         console.log("LFortran Module Initialized!");
+        handleUserTabChange("STDOUT");
     }, [moduleReady]); // update the callback if the state changes
 
     return (

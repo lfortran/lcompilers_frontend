@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Radio } from "antd";
 import { Segmented } from "antd";
 
-function ResultBox({ activeTab, output, handleUserTabChange }) {
+function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
     return (
         <div className="card-container">
             <Segmented
@@ -13,7 +13,7 @@ function ResultBox({ activeTab, output, handleUserTabChange }) {
                 onChange={(key) => handleUserTabChange(key)}
             />
             <pre>
-                <div id="outputBox" style={{ height: "450px", border: "1px solid black", overflow: "scroll", fontSize: "0.8em", padding: "10px" }} dangerouslySetInnerHTML={{ __html: output }}>
+                <div id="outputBox" style={{ height: myHeight, border: "1px solid black", overflow: "scroll", fontSize: "0.9em", padding: "10px" }} dangerouslySetInnerHTML={{ __html: output }}>
 
                 </div>
             </pre>

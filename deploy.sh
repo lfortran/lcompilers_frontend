@@ -1,1 +1,1 @@
-git subtree push --prefix out ubaid gh-pages2
+git subtree push --prefix out ubaid gh-pages
