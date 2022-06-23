@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: '/lcompilers_frontend'
+  basePath: (process.env.NODE_ENV !== "production" ? "" : "/lcompilers_frontend")
 }
 
 module.exports = nextConfig
