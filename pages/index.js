@@ -3,7 +3,6 @@ import ResultBox from "../components/ResultBox";
 import LoadLFortran from "../components/LoadLFortran";
 import remove_ansi_escape_seq from "../utils/ast_asr_handler";
 
-import { useEffect } from "react";
 import { useState } from "react";
 import { Col, Row, Spin } from "antd";
 import { notification } from "antd";
@@ -54,18 +53,7 @@ export default function Home() {
     const [sourceCode, setSourceCode] = useState(initial_source_code);
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
-    const [myHeight, setMyHeight] = useState(0)
-
-    useEffect(() => {
-        const updateMyHeight = () => {
-            const minHeightWidht = (window.innerWidth < window.innerHeight) ? window.innerWidth - 40 : window.innerHeight - 182;
-            setMyHeight(minHeightWidht);
-        }
-        window.addEventListener("resize", updateMyHeight);
-        updateMyHeight();
-        return () => window.removeEventListener("resize", updateMyHeight)
-    }, [])
-
+    const [myHeight, setMyHeight] = useState("calc(100vh - 170px)")
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {

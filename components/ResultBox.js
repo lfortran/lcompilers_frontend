@@ -12,8 +12,8 @@ function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
                 value={activeTab}
                 onChange={(key) => handleUserTabChange(key)}
             />
-            <pre>
-                <div id="outputBox" style={{ height: myHeight, border: "1px solid black", overflow: "scroll", fontSize: "0.9em", padding: "10px" }} dangerouslySetInnerHTML={{ __html: output }}>
+            <pre style={{margin: "0px", height: myHeight, overflow: "scroll" }}>
+                <div id="outputBox" style={{ minHeight: "100%", border: "1px solid black", fontSize: "0.9em", padding: "10px" }} dangerouslySetInnerHTML={{ __html: output }}>
 
                 </div>
             </pre>
