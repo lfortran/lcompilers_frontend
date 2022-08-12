@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,20 +28,24 @@ jobs:
         cache: 'npm'
 
     - name: Install Dependencies
+      shell: bash -l {0}
       run: npm i
 
     - name: Build Site
+      shell: bash -l {0}
       run: |
         npm run build
         npm run export
-        mv out deploy
 
     - name: Misc Steps
+      shell: bash -l {0}
       run: |
+        mv out deploy
         touch deploy/.nojekyll
         echo "dev.lfortran.org" > deploy/CNAME
 
     - name: SSH Setup
+      shell: bash -l {0}
       run: |
         mkdir ~/.ssh
         chmod 700 ~/.ssh
@@ -57,13 +61,16 @@ jobs:
           GIT_DEPLOY_PRIVATE_SSH_KEY: ${{ secrets.GIT_DEPLOY_PRIVATE_SSH_KEY }}
 
     - name: GIT Setup Config
+      shell: bash -l {0}
       run: |
         git config user.email "noreply@deploy"
         git config user.name "Deploy"
 
     - name: GIT Checkout gh-pages and Add Deploy files
+      shell: bash -l {0}
       run: |
         cp deploy/ ../deploy -r
+        git reset --hard
         git fetch origin
         git checkout gh-pages
         rm -rf *
