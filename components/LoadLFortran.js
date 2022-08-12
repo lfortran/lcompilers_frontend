@@ -42,26 +42,18 @@ function getLfortranExportedFuncs() {
     });
 }
 
-function define_imports(memory, outputBuffer, stdout_print) {
-    function printNum(num) {
-        outputBuffer.push(num.toString());
-    }
-
-    function printStr(startIdx, strSize) {
-        var bytes = new Uint8Array(memory.buffer, startIdx, strSize);
-        var string = new TextDecoder("utf8").decode(bytes);
-        outputBuffer.push(string);
-    }
-
-    function flushBuffer() {
+function define_imports(memory, outputBuffer, exit_code, stdout_print) {
+    const printNum = (num) => outputBuffer.push(num.toString());
+    const printStr = (startIdx, strSize) => outputBuffer.push(
+        new TextDecoder("utf8").decode(new Uint8Array(memory.buffer, startIdx, strSize)));
+    const flushBuffer = () => {
         stdout_print(outputBuffer.join(" ") + "\n");
-        outputBuffer = [];
+        outputBuffer.length = 0;
     }
-
+    const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
     var imports = {
         js: {
             memory: memory,
-
             /* functions */
             print_i32: printNum,
             print_i64: printNum,
@@ -69,30 +61,19 @@ function define_imports(memory, outputBuffer, stdout_print) {
             print_f64: printNum,
             print_str: printStr,
             flush_buf: flushBuffer,
+            set_exit_code: set_exit_code,
         },
     };
-
     return imports;
 }
 
 async function run_wasm(bytes, imports) {
-    var res;
     try {
-        res = await WebAssembly.instantiate(bytes, imports);
-    }
-    catch (e) {
-        console.log(e);
-        return 0;
-    }
-    const { _lcompilers_main } = res.instance.exports;
-    try {
+        var res = await WebAssembly.instantiate(bytes, imports);
+        const { _lcompilers_main } = res.instance.exports;
         _lcompilers_main();
-    }
-    catch (e) {
-        console.log(e);
-        return 0;
-    }
-    return 1;
+    } catch(e) { return e; }
+    return "Success"
 }
 
 async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
@@ -129,21 +110,22 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
         }
         catch (e) {
             console.log(e);
-            myPrint("ERROR: The code could not be compiled. Either there is a compile-time error or there is an issue at our end.")
+            myPrint(e + "\nERROR: The code could not be compiled. Either there is a compile-time error or there is an issue at our end.")
             return 0;
         }
 
     };
 
     lfortran_funcs.execute_code = async function (bytes, stdout_print) {
+        var exit_code = {val: 1}; /* non-zero exit code */
         var outputBuffer = [];
-        var memory = new WebAssembly.Memory({ initial: 10, maximum: 100 }); // initial 640Kb and max 6.4Mb
-        var imports = define_imports(memory, outputBuffer, stdout_print);
-
-        const exec_status = await run_wasm(bytes, imports);
-        if (exec_status) {
+        var memory = new WebAssembly.Memory({ initial: 100, maximum: 100 }); // fixed 6.4 Mb memory currently
+        var imports = define_imports(memory, outputBuffer, exit_code, stdout_print);
+        var err_msg = await run_wasm(bytes, imports);
+        if (exit_code.val == 0) {
             return 1;
         }
+        console.log(err_msg);
         myPrint("ERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.");
         return 0;
     };
