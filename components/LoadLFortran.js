@@ -81,27 +81,27 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
 
     lfortran_funcs.emit_ast_from_source = function (source_code) {
         try { return compiler_funcs.emit_ast_from_source(source_code); }
-        catch (e) { console.log(e); myPrint("ERROR: AST could not be generated from the code"); return 0; }
+        catch (e) { console.log(e); myPrint(e + "\nERROR: AST could not be generated from the code"); return 0; }
     }
 
     lfortran_funcs.emit_asr_from_source = function (source_code) {
         try { return compiler_funcs.emit_asr_from_source(source_code); }
-        catch (e) { console.log(e); myPrint("ERROR: ASR could not be generated from the code"); return 0; }
+        catch (e) { console.log(e); myPrint(e + "\nERROR: ASR could not be generated from the code"); return 0; }
     }
         ;
     lfortran_funcs.emit_wat_from_source = function (source_code) {
         try { return compiler_funcs.emit_wat_from_source(source_code); }
-        catch (e) { console.log(e); myPrint("ERROR: WAT could not be generated from the code"); return 0; }
+        catch (e) { console.log(e); myPrint(e + "\nERROR: WAT could not be generated from the code"); return 0; }
     }
 
     lfortran_funcs.emit_cpp_from_source = function (source_code) {
         try { return compiler_funcs.emit_cpp_from_source(source_code); }
-        catch (e) { console.log(e); myPrint("ERROR: CPP could not be generated from the code"); return 0; }
+        catch (e) { console.log(e); myPrint(e + "\nERROR: CPP could not be generated from the code"); return 0; }
     }
 
     lfortran_funcs.emit_py_from_source = function (source_code) {
         try { return compiler_funcs.emit_py_from_source(source_code); }
-        catch (e) { console.log(e); myPrint("ERROR: LLVM could not be generated from the code"); return 0; }
+        catch (e) { console.log(e); myPrint(e + "\nERROR: LLVM could not be generated from the code"); return 0; }
     }
 
     lfortran_funcs.compile_code = function (source_code) {
@@ -126,7 +126,7 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
             return 1;
         }
         console.log(err_msg);
-        myPrint("ERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.");
+        myPrint(err_msg + "\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.");
         return 0;
     };
 }
