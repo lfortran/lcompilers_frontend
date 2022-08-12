@@ -51,6 +51,14 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
         outputBuffer.length = 0;
     }
     const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
+    const show_image = (rows, cols, arr) => {
+        var arr2D = new Int32Array(memory.buffer, arr, rows * cols);
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; ++j) {
+                console.log(arr2D[i][j]);
+            }
+        }
+    }
     var imports = {
         js: {
             memory: memory,
@@ -62,6 +70,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
             print_str: printStr,
             flush_buf: flushBuffer,
             set_exit_code: set_exit_code,
+            show_img: show_image
         },
     };
     return imports;
