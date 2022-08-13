@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { Radio } from "antd";
+import { Button } from "antd";
+import { CopyOutlined } from "@ant-design/icons";
 import { Segmented } from "antd";
 
 function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
+    function copyTextToClipboard() {
+        navigator.clipboard.writeText(output);
+    }
     return (
         <div className="card-container">
             <Segmented
@@ -12,6 +16,9 @@ function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
                 value={activeTab}
                 onChange={(key) => handleUserTabChange(key)}
             />
+            <Button onClick={copyTextToClipboard}  style={{ position: "absolute", right: "40px", top: "80px" }}>
+                <CopyOutlined />
+            </Button>
             <pre style={{margin: "0px", height: myHeight, overflow: "scroll", border: "1px solid black" }}>
                 <div id="outputBox" style={{ minHeight: "100%", fontSize: "0.9em", padding: "10px" }} dangerouslySetInnerHTML={{ __html: output }}>
 
