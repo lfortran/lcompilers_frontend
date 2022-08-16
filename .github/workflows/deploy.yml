@@ -5,7 +5,7 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Checkout Master
+    - name: Checkout Main
       uses: actions/checkout@v3
 
     - name: Use Node.js ${{ matrix.node-version }}
