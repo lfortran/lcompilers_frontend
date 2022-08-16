@@ -62,6 +62,13 @@ var src_code_mandel_brot = `program mandelbrot
     real (rk) :: y_0
     real (rk) :: x_sqr
     real (rk) :: y_sqr
+    interface
+        subroutine show_img(n, m, A) bind(c)
+        integer, intent(in) :: n, m
+        integer, intent(in) :: A(n,m)
+        end subroutine
+    end interface
+
 
     do j = 1, j_max
         y_0 = y_offset + dy_dj * j
@@ -92,13 +99,6 @@ var src_code_mandel_brot = `program mandelbrot
     call show_img(j_max, i_max, image)
 
     print *, "Thank you! Hope you had fun!"
-
-    interface
-        subroutine show_img(n, m, A) bind(c)
-        integer, intent(in) :: n, m
-        integer, intent(in) :: A(n,m)
-        end subroutine
-    end interface
 end program mandelbrot
 `;
 
