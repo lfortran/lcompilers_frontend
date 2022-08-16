@@ -1,7 +1,6 @@
 import TextBox from "../components/TextBox";
 import ResultBox from "../components/ResultBox";
 import LoadLFortran from "../components/LoadLFortran";
-import remove_ansi_escape_seq from "../utils/ast_asr_handler";
 import src_code_examples from "../utils/source_code_examples";
 
 import { useState } from "react";
