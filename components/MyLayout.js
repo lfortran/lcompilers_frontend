@@ -1,6 +1,6 @@
 import MyHeader from "./MyHeader";
 import MyFooter from "./MyFooter";
-import { Divider, Layout } from "antd";
+import { Layout } from "antd";
 import { Content } from "antd/lib/layout/layout";
 
 function MyLayout({ children }) {
