@@ -1,8 +1,18 @@
 import LFortranApp from "../../../components/LFortranApp";
 import { getAllCommits, getCommitFromJson } from "../../../utils/commit_handler";
+import MyHeader from "../../../components/MyHeader";
+import MyFooter from "../../../components/MyFooter";
+import { Content } from "antd/lib/layout/layout";
 
-function index({ commit }) {
-    return <LFortranApp commit={commit}/>;
+function index({ commits, commit }) {
+    return (
+        <>
+            <MyHeader commits={commits}></MyHeader>
+            <Content style={{ padding: "10px 20px" }}>
+                <LFortranApp commit={commit} />
+            </Content>
+            <MyFooter></MyFooter>
+        </>);
 }
 
 export const getStaticProps = async (context) => {
