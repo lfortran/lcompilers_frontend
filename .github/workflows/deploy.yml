@@ -31,6 +31,10 @@ jobs:
       shell: bash -l {0}
       run: npm i
 
+    - name: Download/Fetch data.json
+      shell: bash -l {0}
+      run: curl https://lfortran.github.io/wasm_builds/data.json -o data.json
+
     - name: Build Site
       shell: bash -l {0}
       run: |
