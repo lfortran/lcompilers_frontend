@@ -182,7 +182,7 @@ function LoadLFortran({
 
     return (
         <div>
-            <Script src={`https://www.ubaidshaikh.me/wasm_builds/${commit.commit}/lfortran.js`} onLoad={setupLFortran}></Script>
+            <Script src={`https://www.ubaidshaikh.me/wasm_builds/${commit.lfortran_commit_sha}/lfortran.js`} onLoad={setupLFortran}></Script>
         </div>
     );
 }

@@ -12,7 +12,7 @@ export async function getAllCommits() {
 export async function getCommitFromJson(commitId) {
     const commits = await getAllCommits();
     var reqCommit = commits.find((currentCommmit)=> {
-        return currentCommmit.commit === commitId
+        return currentCommmit.lfortran_commit_sha === commitId
     });
     return reqCommit;
 }

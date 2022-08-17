@@ -36,7 +36,7 @@ export const getStaticPaths = async () => {
 
     const commits = await getAllCommits();
 
-    const ids = commits.map((commit) => commit.commit);
+    const ids = commits.map((commit) => commit.lfortran_commit_sha);
     const paths = ids.map((id) => ({ params: { id: id.toString() } }));
     return {
         paths,
