@@ -19,12 +19,13 @@ export const getStaticProps = async (context) => {
     // const res = await fetch(`${server}/api/commits/${context.params.id}`);
     // const commit = await res.json();
 
+    const commits = await getAllCommits();
     const commit = await getCommitFromJson(context.params.id);
-    console.log(commit);
 
     return {
         props: {
-            commit: commit
+            commits: commits,
+            commit: commit,
         },
     };
 };
