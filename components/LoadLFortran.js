@@ -169,7 +169,8 @@ function LoadLFortran({
     lfortran_funcs,
     openNotification,
     myPrint,
-    handleUserTabChange
+    handleUserTabChange,
+    commit
 }) {
     const setupLFortran = useCallback(async () => {
         await setup_lfortran_funcs(lfortran_funcs, myPrint);
@@ -181,7 +182,7 @@ function LoadLFortran({
 
     return (
         <div>
-            <Script src={`${myServer}/lfortran.js`} onLoad={setupLFortran}></Script>
+            <Script src={`https://www.ubaidshaikh.me/wasm_builds/${commit.commit}/lfortran.js`} onLoad={setupLFortran}></Script>
         </div>
     );
 }
