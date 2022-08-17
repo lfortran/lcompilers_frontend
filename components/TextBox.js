@@ -1,5 +1,4 @@
-// import { useEffect, useRef, useState } from "react";
-import { Button, Tabs, Spin } from "antd";
+import { Button, Tabs } from "antd";
 const { TabPane } = Tabs;
 import { PlayCircleOutlined } from "@ant-design/icons";
 import dynamic from 'next/dynamic'
@@ -8,12 +7,6 @@ const Editor = dynamic(import('./Editor'), {
 })
 
 function TextBox({ disabled, sourceCode, setSourceCode, activeTab, handleUserTabChange, myHeight }) {
-    // const ref = useRef(null);
-    // useEffect(() => {
-    //     console.log("Hi")
-    //     console.log(ref.current.parentElement.offsetHeight)
-    // }, [])
-
     const extraOperations = (
         <Button disabled={disabled} onClick={() => handleUserTabChange(activeTab)}>
             <PlayCircleOutlined /> Run

@@ -1,6 +1,5 @@
 import Script from "next/script";
 import { useCallback } from "react";
-import { myServer } from "../config";
 
 // lfortran exported functions
 function getLfortranExportedFuncs() {

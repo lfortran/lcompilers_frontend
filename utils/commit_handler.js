@@ -1,5 +1,5 @@
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
 
 const dataPath = path.join(process.cwd(), 'data.json');
 

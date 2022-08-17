@@ -1,8 +1,8 @@
 import { HomeOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import { Menu, Button } from 'antd';
 import { useState } from "react";
-import HeadMeta from './HeadMeta';
 import { useRouter } from 'next/router';
+import HeadMeta from './HeadMeta';
 
 
 function MyHeader({ commits }) {
