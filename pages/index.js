@@ -13,8 +13,6 @@ export const getStaticProps = async (context) => {
     // const commit = await res.json();
 
     const commits = await getAllCommits();
-    console.log("commits");
-    console.log(commits);
 
     return {
         props: {
