@@ -12,8 +12,8 @@ var src_code_mandel_brot = `program mandelbrot
     real (rk), parameter :: dy_dj    = -height / j_max
     real (rk), parameter :: x_offset = x_centre - 0.5_rk * (i_max + 1) * dx_di
     real (rk), parameter :: y_offset = y_centre - 0.5_rk * (j_max + 1) * dy_dj
-    integer :: image(j_max, i_max), image_color(j_max, i_max, 4)
-    integer   :: i
+    integer :: image(j_max, i_max), image_color(j_max, i_max, 4), palette(4,3)
+    integer   :: i, idx
     integer   :: j
     integer   :: n
     real (rk) :: x
@@ -53,12 +53,18 @@ var src_code_mandel_brot = `program mandelbrot
             end do
         end do
     end do
+    palette(1,1) =   0; palette(1,2) = 135; palette(1,3) =  68
+    palette(2,1) =   0; palette(2,2) =  87; palette(2,3) = 231
+    palette(3,1) = 214; palette(3,2) =  45; palette(3,3) =  32
+    palette(4,1) = 255; palette(4,2) = 167; palette(4,3) =   0
+
     do j = 1, j_max
         do i = 1, i_max
-            image_color(j,i,1) = image(j,i)         ! Red
-            image_color(j,i,2) = image(j,i)         ! Green
-            image_color(j,i,3) = 255-image(j,i)/2   ! Blue
-            image_color(j,i,4) = 255                ! Alpha
+            idx = image(j,i) - (image(j,i)/4)*4 + 1
+            image_color(j,i,1) = palette(idx,1) ! Red
+            image_color(j,i,2) = palette(idx,2) ! Green
+            image_color(j,i,3) = palette(idx,3) ! Blue
+            image_color(j,i,4) = 255            ! Alpha
         end do
     end do
     print *, "The Mandelbrot image in color:"
