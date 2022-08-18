@@ -41,22 +41,6 @@ jobs:
       run: |
         mv out deploy
 
-    - name: SSH Setup
-      shell: bash -l {0}
-      run: |
-        mkdir ~/.ssh
-        chmod 700 ~/.ssh
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-        eval "$(ssh-agent -s)"
-
-        if [[ "${GIT_DEPLOY_PRIVATE_SSH_KEY}" == "" ]]; then
-          echo "Note: GIT_DEPLOY_PRIVATE_SSH_KEY is empty, skipping..."
-          exit 0
-        fi
-        ssh-add <(echo "$GIT_DEPLOY_PRIVATE_SSH_KEY" | base64 -d)
-      env:
-          GIT_DEPLOY_PRIVATE_SSH_KEY: ${{ secrets.GIT_DEPLOY_PRIVATE_SSH_KEY }}
-
     - name: GIT Setup Config
       shell: bash -l {0}
       run: |
