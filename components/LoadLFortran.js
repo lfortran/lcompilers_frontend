@@ -51,7 +51,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
         outputBuffer.length = 0;
     }
     const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
-    const show_image = (rows, cols, arr) => {
+    const show_image = (cols, rows, arr) => {
         var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * rows * cols);
         var canvas = document.createElement("CANVAS");
         canvas.width = cols;
@@ -68,7 +68,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
         outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>`)
         flushBuffer();
     }
-    const show_image_color = (rows, cols, arr) => {
+    const show_image_color = (cols, rows, arr) => {
         var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * 4 * rows * cols);
         var canvas = document.createElement("CANVAS");
         canvas.width = cols;
