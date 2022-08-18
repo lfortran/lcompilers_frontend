@@ -52,30 +52,16 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
     }
     const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
     const show_image = (rows, cols, arr) => {
-        // console.log(rows, cols, arr)
         var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * rows * cols);
-        var arr2D = new Int32Array(rows * cols);
-        for (let k = 0; k < rows * cols; k++) {
-            arr2D[k] = arr2D_data.getInt32(k << 2, true);
-        }
-        // var imgText = "";
-        // for (let i = 0; i < rows; i++) {
-        //     for (let j = 0; j < cols; j++) {
-
-        //         imgText += ["0", "1"][arr2D.getInt32((i * cols + j) * 4, true)];
-        //     }
-        //     imgText += "\n";
-        // }
-        // console.log(imgText);
         var canvas = document.createElement("CANVAS");
         canvas.width = cols;
         canvas.height = rows;
         var ctx = canvas.getContext("2d");
         var imgData = ctx.createImageData(cols, rows);
         for (var i = 0; i < imgData.data.length; i += 4) {
-            imgData.data[i + 0] = arr2D[i >> 2];
-            imgData.data[i + 1] = arr2D[i >> 2];
-            imgData.data[i + 2] = arr2D[i >> 2];
+            imgData.data[i + 0] = arr2D_data.getInt32(i, true);
+            imgData.data[i + 1] = arr2D_data.getInt32(i, true);
+            imgData.data[i + 2] = arr2D_data.getInt32(i, true);
             imgData.data[i + 3] = 255; // alpha channel (from 0-255), 0 is transparent and 255 is fully visible
         }
         ctx.putImageData(imgData, 0, 0);
