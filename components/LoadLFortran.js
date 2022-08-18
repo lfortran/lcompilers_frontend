@@ -82,6 +82,24 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
         outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>`)
         flushBuffer();
     }
+    const show_image_color = (rows, cols, arr) => {
+        var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * 4 * rows * cols);
+        var canvas = document.createElement("CANVAS");
+        canvas.width = cols;
+        canvas.height = rows;
+        var ctx = canvas.getContext("2d");
+        var imgData = ctx.createImageData(cols, rows);
+        // The data in DataView is stored as i32 per channel, while it
+        // should be i8. Currently we have to copy the i32 integer and assign
+        // it to the canvas' i8 integer. We have to index it with 4*i, because
+        // the getInt32 method accepts a byte index.
+        for (var i = 0; i < imgData.data.length; i++) {
+            imgData.data[i] = arr2D_data.getInt32(4*i, true);
+        }
+        ctx.putImageData(imgData, 0, 0);
+        outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>`)
+        flushBuffer();
+    }
     var imports = {
         js: {
             memory: memory,
@@ -93,7 +111,8 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
             print_str: printStr,
             flush_buf: flushBuffer,
             set_exit_code: set_exit_code,
-            show_img: show_image
+            show_img: show_image,
+            show_img_color: show_image_color
         },
     };
     return imports;

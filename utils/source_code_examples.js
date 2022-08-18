@@ -12,7 +12,7 @@ var src_code_mandel_brot = `program mandelbrot
     real (rk), parameter :: dy_dj    = -height / j_max
     real (rk), parameter :: x_offset = x_centre - 0.5_rk * (i_max + 1) * dx_di
     real (rk), parameter :: y_offset = y_centre - 0.5_rk * (j_max + 1) * dy_dj
-    integer :: image(j_max, i_max)
+    integer :: image(j_max, i_max, 4)
     integer   :: i
     integer   :: j
     integer   :: n
@@ -23,9 +23,9 @@ var src_code_mandel_brot = `program mandelbrot
     real (rk) :: x_sqr
     real (rk) :: y_sqr
     interface
-        subroutine show_img(n, m, A) bind(c)
+        subroutine show_img_color(n, m, A) bind(c)
         integer, intent(in) :: n, m
-        integer, intent(in) :: A(n,m)
+        integer, intent(in) :: A(n,m,4)
         end subroutine
     end interface
     do j = 1, j_max
@@ -39,11 +39,17 @@ var src_code_mandel_brot = `program mandelbrot
             x_sqr = x ** 2
             y_sqr = y ** 2
             if (x_sqr + y_sqr > 4.0_rk) then
-                image(j,i) = 255
+                image(j,i,1) = 255
+                image(j,i,2) = 0
+                image(j,i,3) = 0
+                image(j,i,4) = 255
                 exit
             end if
             if (n == n_max) then
-                image(j,i) = 0
+                image(j,i,1) = 0
+                image(j,i,2) = 0
+                image(j,i,3) = 255
+                image(j,i,4) = 255
                 exit
             end if
             y = y_0 + 2.0_rk * x * y
@@ -53,7 +59,7 @@ var src_code_mandel_brot = `program mandelbrot
         end do
     end do
     print *, "The Mandelbrot image is:"
-    call show_img(j_max, i_max, image)
+    call show_img_color(j_max, i_max, image)
     print *, "Thank you! Hope you had fun!"
 end program mandelbrot
 `;
