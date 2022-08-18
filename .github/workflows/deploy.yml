@@ -34,15 +34,12 @@ jobs:
     - name: Build Site
       shell: bash -l {0}
       run: |
-        npm run build
-        npm run export
+        ./build.sh
 
     - name: Misc Steps
       shell: bash -l {0}
       run: |
         mv out deploy
-        touch deploy/.nojekyll
-        echo "dev.lfortran.org" > deploy/CNAME
 
     - name: SSH Setup
       shell: bash -l {0}
