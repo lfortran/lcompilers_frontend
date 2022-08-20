@@ -51,6 +51,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
         outputBuffer.length = 0;
     }
     const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
+    const cpu_time = (time) => (Date.now() / 1000); // Date.now() returns milliseconds, so divide by 1000
     const show_image = (cols, rows, arr) => {
         var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * rows * cols);
         var canvas = document.createElement("CANVAS");
@@ -97,6 +98,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
             print_str: printStr,
             flush_buf: flushBuffer,
             set_exit_code: set_exit_code,
+            cpu_time: cpu_time,
             show_img: show_image,
             show_img_color: show_image_color
         },
