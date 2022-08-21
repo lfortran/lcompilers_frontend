@@ -8,6 +8,7 @@ set -ex
 latest_commit="4f6dff456"
 curl "https://lfortran.github.io/wasm_builds/dev/$latest_commit/lfortran.js" -o public/lfortran.js
 curl "https://lfortran.github.io/wasm_builds/dev/$latest_commit/lfortran.wasm" -o public/lfortran.wasm
+curl "https://lfortran.github.io/wasm_builds/dev/$latest_commit/lfortran.data" -o public/lfortran.data
 
 npm run build
 npm run export

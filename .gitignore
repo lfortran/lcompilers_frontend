@@ -3,6 +3,7 @@
 # assets
 public/lfortran.js
 public/lfortran.wasm
+public/lfortran.data
 
 # dependencies
 /node_modules
