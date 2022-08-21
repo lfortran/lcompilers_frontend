@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: (process.env.NODE_ENV !== "production" ? "" : "")
+  basePath: (process.env.NODE_ENV !== "production" ? "" : "/pull_request_preview")
 }
 
 module.exports = nextConfig
