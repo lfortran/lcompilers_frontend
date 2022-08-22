@@ -52,7 +52,8 @@ jobs:
       env:
           GIT_PR_PREVIEW_PRIVATE_SSH_KEY: ${{ secrets.GIT_PR_PREVIEW_PRIVATE_SSH_KEY }}
 
-    - name: Create comment about deployment
+    - name: Create Deployment Comment
+      if: ${{ github.ref != 'refs/heads/main' && github.event.pull_request.head.repo.name == github.repository }}
       uses: peter-evans/create-or-update-comment@v2
       with:
         issue-number: ${{ github.event.pull_request.number }}
