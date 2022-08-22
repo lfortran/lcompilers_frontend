@@ -10,8 +10,8 @@ if [[ ${git_ref} == "refs/heads/main" ]]; then
     deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
 else
     # Test version - pipeline triggered from pull request
-    deploy_repo_pull="https://github.com/Shaikh-Ubaid/pull_request_preview.git"
-    deploy_repo_push="git@github.com:Shaikh-Ubaid/pull_request_preview.git"
+    deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
+    deploy_repo_push="git@github.com:lfortran/pull_request_preview.git"
 fi
 
 
