@@ -44,7 +44,7 @@ if [[ ${git_ref} != "refs/heads/main" ]]; then
         echo "Note: GIT_PR_PREVIEW_PRIVATE_SSH_KEY is empty, skipping..."
         exit 0
     fi
+    ssh-add <(echo "$GIT_PR_PREVIEW_PRIVATE_SSH_KEY" | base64 -d)
 fi
-ssh-add <(echo "$GIT_PR_PREVIEW_PRIVATE_SSH_KEY" | base64 -d)
 
 git push ${deploy_repo_push} gh-pages:gh-pages
