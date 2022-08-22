@@ -43,28 +43,16 @@ jobs:
       run: |
         mv out deploy
 
-    - name: GIT Setup Config
+    - name: Upload Site
       shell: bash -l {0}
-      run: |
-        git config user.email "noreply@deploy"
-        git config user.name "Deploy"
+      run: ci/upload_site.sh
+      env:
+          GIT_PR_PREVIEW_PRIVATE_SSH_KEY: ${{ secrets.GIT_PR_PREVIEW_PRIVATE_SSH_KEY }}
 
-    - name: GIT Checkout gh-pages and Add Deploy files
-      shell: bash -l {0}
-      run: |
-        cp deploy/ ../deploy -r
-        git reset --hard
-        git fetch origin
-        git checkout gh-pages
-        rm -rf *
-        mv ../deploy/* .
-
-    - name: GIT Add and Commit
-      shell: bash -l {0}
-      run: |
-        git add .
-        COMMIT_MESSAGE="Deploying on $(date "+%Y-%m-%d %H:%M:%S")"
-        git commit -m "${COMMIT_MESSAGE}"
-
-    - name: GIT Deploy
-      run: git push origin gh-pages
+    - name: Create comment about deployment
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Your site is deployed at https://www.ubaidshaikh.me/pull_request_preview/
+        reactions: 'rocket'
