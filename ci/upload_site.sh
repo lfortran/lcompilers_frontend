@@ -39,9 +39,11 @@ git add .
 COMMIT_MESSAGE="Deploying on $(date "+%Y-%m-%d %H:%M:%S")"
 git commit -m "${COMMIT_MESSAGE}"
 
-if [[ "${GIT_PR_PREVIEW_PRIVATE_SSH_KEY}" == "" ]]; then
-    echo "Note: GIT_PR_PREVIEW_PRIVATE_SSH_KEY is empty, skipping..."
-    exit 0
+if [[ ${git_ref} != "refs/heads/main" ]]; then
+    if [[ "${GIT_PR_PREVIEW_PRIVATE_SSH_KEY}" == "" ]]; then
+        echo "Note: GIT_PR_PREVIEW_PRIVATE_SSH_KEY is empty, skipping..."
+        exit 0
+    fi
 fi
 ssh-add <(echo "$GIT_PR_PREVIEW_PRIVATE_SSH_KEY" | base64 -d)
 
