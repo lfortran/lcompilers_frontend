@@ -8,6 +8,9 @@ on:
     branches: [ "main" ]
   repository_dispatch:
     types: deploy
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
