@@ -25,8 +25,8 @@ D=`pwd`
 mkdir $HOME/repos
 cd $HOME/repos
 
-git clone ${deploy_repo_pull} pr_preview
-cd pr_preview
+git clone ${deploy_repo_pull} lcompilers_frontend
+cd lcompilers_frontend
 git fetch origin
 git checkout gh-pages
 rm -rf *
