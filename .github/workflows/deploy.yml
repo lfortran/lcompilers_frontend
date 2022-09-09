@@ -57,7 +57,7 @@ jobs:
     # https://docs.github.com/en/actions/security-guides/automatic-token-authentication
 
     - name: Create Deployment Comment
-      if: ${{ github.ref != 'refs/heads/main' && secrets.GITHUB_TOKEN != '' }}
+      if: ${{ github.ref != 'refs/heads/main' && github.token != '' }}
       uses: peter-evans/create-or-update-comment@v2
       with:
         issue-number: ${{ github.event.pull_request.number }}
