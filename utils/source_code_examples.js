@@ -1,5 +1,5 @@
 var src_code_mandel_brot = `program mandelbrot
-integer, parameter :: Nx = 600, Ny = 450, n_max = 255, dp=8
+integer, parameter :: Nx = 600, Ny = 450, n_max = 255, dp=kind(0.d0)
 real(dp), parameter :: xcenter = -0.5_dp, ycenter = 0.0_dp, &
     width = 4, height = 3, dx_di = width/Nx, dy_dj = -height/Ny, &
     x_offset = xcenter - (Nx+1)*dx_di/2, y_offset = ycenter - (Ny+1)*dy_dj/2
