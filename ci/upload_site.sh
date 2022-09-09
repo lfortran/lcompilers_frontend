@@ -4,6 +4,11 @@ set -ex
 
 git_ref=${GITHUB_REF}
 
+mkdir ~/.ssh
+chmod 700 ~/.ssh
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+eval "$(ssh-agent -s)"
+
 if [[ ${git_ref} == "refs/heads/main" ]]; then
     # Production version - pipeline triggered from main branch
     deploy_repo_pull="git@github.com:lfortran/lcompilers_frontend.git"
@@ -13,12 +18,6 @@ else
     deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
     deploy_repo_push="git@github.com:lfortran/pull_request_preview.git"
 fi
-
-
-mkdir ~/.ssh
-chmod 700 ~/.ssh
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-eval "$(ssh-agent -s)"
 
 D=`pwd`
 
