@@ -6,7 +6,7 @@ git_ref=${GITHUB_REF}
 
 if [[ ${git_ref} == "refs/heads/main" ]]; then
     # Production version - pipeline triggered from main branch
-    deploy_repo_pull="https://github.com/lfortran/lcompilers_frontend.git"
+    deploy_repo_pull="git@github.com:lfortran/lcompilers_frontend.git"
     deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
 else
     # Test version - pipeline triggered from pull request
@@ -25,8 +25,8 @@ D=`pwd`
 mkdir $HOME/repos
 cd $HOME/repos
 
-git clone ${deploy_repo_pull} pr_preview
-cd pr_preview
+git clone ${deploy_repo_pull} lcompilers_frontend
+cd lcompilers_frontend
 git fetch origin
 git checkout gh-pages
 rm -rf *
