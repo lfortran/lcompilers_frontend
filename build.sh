@@ -13,4 +13,3 @@ curl "https://lfortran.github.io/wasm_builds/dev/$latest_commit/lfortran.data" -
 npm run build
 npm run export
 echo "dev.lfortran.org" >> out/CNAME
-touch out/.nojekyll
