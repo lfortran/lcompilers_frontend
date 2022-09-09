@@ -11,7 +11,7 @@ eval "$(ssh-agent -s)"
 
 if [[ ${git_ref} == "refs/heads/main" ]]; then
     # Production version - pipeline triggered from main branch
-    deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
+    deploy_repo_push="origin"
 
     D=".."
     cp deploy/ $D/deploy -r
