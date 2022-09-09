@@ -4,29 +4,33 @@ set -ex
 
 git_ref=${GITHUB_REF}
 
-if [[ ${git_ref} == "refs/heads/main" ]]; then
-    # Production version - pipeline triggered from main branch
-    deploy_repo_pull="git@github.com:lfortran/lcompilers_frontend.git"
-    deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
-else
-    # Test version - pipeline triggered from pull request
-    deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
-    deploy_repo_push="git@github.com:lfortran/pull_request_preview.git"
-fi
-
-
 mkdir ~/.ssh
 chmod 700 ~/.ssh
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 eval "$(ssh-agent -s)"
 
-D=`pwd`
+if [[ ${git_ref} == "refs/heads/main" ]]; then
+    # Production version - pipeline triggered from main branch
+    deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
 
-mkdir $HOME/repos
-cd $HOME/repos
+    D=".."
+    cp deploy/ $D/deploy -r
+    git reset --hard
+    git clean -dfx
+else
+    # Test version - pipeline triggered from pull request
+    deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
+    deploy_repo_push="git@github.com:lfortran/pull_request_preview.git"
 
-git clone ${deploy_repo_pull} lcompilers_frontend
-cd lcompilers_frontend
+    D=`pwd`
+
+    mkdir $HOME/repos
+    cd $HOME/repos
+
+    git clone ${deploy_repo_pull} pr_preview
+    cd pr_preview
+fi
+
 git fetch origin
 git checkout gh-pages
 rm -rf *
