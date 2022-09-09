@@ -1,6 +1,6 @@
 import Script from "next/script";
 import { useCallback } from "react";
-import { myServer } from "../config";
+// import { myServer } from "../config";
 
 // lfortran exported functions
 function getLfortranExportedFuncs() {
@@ -188,7 +188,7 @@ function LoadLFortran({
 
     return (
         <div>
-            <Script src={`${myServer}/lfortran.js`} onLoad={setupLFortran}></Script>
+            <Script src={`./lfortran.js`} onLoad={setupLFortran}></Script>
         </div>
     );
 }
