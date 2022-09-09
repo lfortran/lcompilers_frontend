@@ -11,21 +11,26 @@ eval "$(ssh-agent -s)"
 
 if [[ ${git_ref} == "refs/heads/main" ]]; then
     # Production version - pipeline triggered from main branch
-    deploy_repo_pull="git@github.com:lfortran/lcompilers_frontend.git"
     deploy_repo_push="git@github.com:lfortran/lcompilers_frontend.git"
+
+    D=".."
+    cp deploy/ $D/deploy -r
+    git reset --hard
+    git clean -dfx
 else
     # Test version - pipeline triggered from pull request
     deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
     deploy_repo_push="git@github.com:lfortran/pull_request_preview.git"
+
+    D=`pwd`
+
+    mkdir $HOME/repos
+    cd $HOME/repos
+
+    git clone ${deploy_repo_pull} pr_preview
+    cd pr_preview
 fi
 
-D=`pwd`
-
-mkdir $HOME/repos
-cd $HOME/repos
-
-git clone ${deploy_repo_pull} lcompilers_frontend
-cd lcompilers_frontend
 git fetch origin
 git checkout gh-pages
 rm -rf *
