@@ -58,5 +58,5 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          Your site is deployed at https://preview.dev.lfortran.org/
+          Your site is deployed at https://lfortran.github.io/pull_request_preview
         reactions: 'rocket'
