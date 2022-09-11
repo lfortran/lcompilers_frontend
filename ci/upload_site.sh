@@ -35,6 +35,7 @@ git fetch origin
 git checkout gh-pages
 rm -rf *
 mv $D/deploy/* .
+touch .nojekyll
 
 git config user.email "noreply@deploy"
 git config user.name "Deploy"
