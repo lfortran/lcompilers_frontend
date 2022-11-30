@@ -1,4 +1,5 @@
 import { Footer } from "antd/lib/layout/layout";
+import commit from "../utils/commit.json"
 
 function MyFooter() {
     return (
@@ -11,7 +12,7 @@ function MyFooter() {
                 width: "100%",
             }}
         >
-            <a href="https://lfortran.org/">LFortran</a> by <a href="https://lcompilers.org/">LCompilers</a>
+            <a href="https://lfortran.org/">LFortran</a> (<a href={"https://github.com/lfortran/lfortran/commit/" + commit.id}>{commit.id}</a>) by <a href="https://lcompilers.org/">LCompilers</a>
         </Footer>
     );
 }
