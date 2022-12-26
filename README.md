@@ -2,7 +2,7 @@
 
 First install `npm` for example using Conda:
 ```
-conda create -n npm nodejs
+conda env create -f environment.yml
 conda activate npm
 ```
 Install dependencies:
@@ -17,7 +17,7 @@ Then build the website:
 
 Finally serve a local version using:
 ```
-npm run dev
+MY_ENV="production" npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

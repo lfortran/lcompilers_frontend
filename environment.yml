@@ -1,0 +1,5 @@
+name: npm
+channels:
+  - conda-forge
+dependencies:
+  - nodejs=16.17.1
