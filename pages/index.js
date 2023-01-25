@@ -2,6 +2,7 @@ import TextBox from "../components/TextBox";
 import ResultBox from "../components/ResultBox";
 import LoadLFortran from "../components/LoadLFortran";
 import src_code_examples from "../utils/source_code_examples";
+import { useIsMobile } from "../components/useIsMobile";
 
 import { useState } from "react";
 import { Col, Row, Spin } from "antd";
@@ -43,7 +44,9 @@ export default function Home() {
     const [sourceCode, setSourceCode] = useState(src_code_examples.src_code_mandel_brot);
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
-    const [myHeight, setMyHeight] = useState("calc(100vh - 170px)")
+    const isMobile = useIsMobile();
+
+    const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
