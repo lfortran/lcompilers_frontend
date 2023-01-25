@@ -136,14 +136,16 @@ export default function Home() {
                             myHeight={myHeight}
                         ></ResultBox>
                     ) : (
-                        <Spin
-                            style={{
-                                position: "relative",
-                                top: "50%",
-                                left: "50%",
-                            }}
-                            indicator={antIcon}
-                        />
+                        <div style={{height: myHeight}}>
+                            <Spin
+                                style={{
+                                    position: "relative",
+                                    top: "50%",
+                                    left: "50%",
+                                }}
+                                indicator={antIcon}
+                            />
+                        </div>
                     )}
                 </Col>
             </Row>
