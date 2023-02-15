@@ -7,8 +7,7 @@ var preinstalled_programs = {
 
     x = (2+3)*5
     print *, x
-end program
-    `,
+end program`,
     mandelbrot: `program mandelbrot
     integer, parameter :: Nx = 600, Ny = 450, n_max = 255, dp=kind(0.d0)
     real(dp), parameter :: xcenter = -0.5_dp, ycenter = 0.0_dp, &
@@ -61,8 +60,7 @@ end program
     print *, "The Mandelbrot image in grayscale:"
     call show_img(Nx, Ny, image)
     print *, "Done."
-    end program mandelbrot
-`
+end program mandelbrot`
     },
     experimental: {
         template_add: `module template_add_m
@@ -125,8 +123,7 @@ implicit none
 
 call test_template()
 
-end program template_add
-    `,
+end program template_add`,
     template_nested: `module template_nested_m
     implicit none
     private
@@ -181,8 +178,7 @@ implicit none
 
 call test_template()
 
-end program template_nested
-    `
+end program template_nested`
     }
 }
 
