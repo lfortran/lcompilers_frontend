@@ -1,24 +1,42 @@
-// import { useEffect, useRef, useState } from "react";
-import { Button, Tabs, Spin } from "antd";
+import { Button, Tabs, Dropdown, Menu, Space } from "antd";
 const { TabPane } = Tabs;
-import { PlayCircleOutlined } from "@ant-design/icons";
+import { DownOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import preinstalled_programs from "../utils/preinstalled_programs";
 import dynamic from 'next/dynamic'
 const Editor = dynamic(import('./Editor'), {
   ssr: false
 })
 
 function TextBox({ disabled, sourceCode, setSourceCode, activeTab, handleUserTabChange, myHeight }) {
-    // const ref = useRef(null);
-    // useEffect(() => {
-    //     console.log("Hi")
-    //     console.log(ref.current.parentElement.offsetHeight)
-    // }, [])
+    var menu_items = [];
+    for (let category in preinstalled_programs) {
+        var category_examples = []
+        for (let example in preinstalled_programs[category]) {
+            category_examples.push({
+                key: example,
+                label: example,
+                onClick: () => { setSourceCode(preinstalled_programs[category][example]) }
+            });
+        }
 
-    const extraOperations = (
-        <Button disabled={disabled} onClick={() => handleUserTabChange(activeTab)}>
-            <PlayCircleOutlined /> Run
-        </Button>
-    );
+        menu_items.push({
+            key: category,
+            label: category,
+            children: category_examples
+        });
+    }
+
+    const examples_menu = (<Menu items={menu_items}></Menu>);
+    const extraOperations = {
+        right: <Button disabled={disabled} onClick={() => handleUserTabChange(activeTab)}> <PlayCircleOutlined /> Run </Button>,
+        left: <Dropdown overlay={examples_menu} trigger="hover">
+                <a onClick={(e) => e.preventDefault()}>
+                    <Space style={{marginRight: "10px"}}>
+                        Examples <DownOutlined />
+                    </Space>
+                </a>
+            </Dropdown>
+    };
 
     return (
         <div className="card-container" style={{height: "100%" }}>

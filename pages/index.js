@@ -1,7 +1,7 @@
 import TextBox from "../components/TextBox";
 import ResultBox from "../components/ResultBox";
 import LoadLFortran from "../components/LoadLFortran";
-import src_code_examples from "../utils/source_code_examples";
+import preinstalled_programs from "../utils/preinstalled_programs";
 import { useIsMobile } from "../components/useIsMobile";
 
 import { useState } from "react";
@@ -41,7 +41,7 @@ var lfortran_funcs = {
 
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
-    const [sourceCode, setSourceCode] = useState(src_code_examples.src_code_mandel_brot);
+    const [sourceCode, setSourceCode] = useState(preinstalled_programs.basic.mandelbrot);
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const isMobile = useIsMobile();
