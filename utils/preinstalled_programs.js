@@ -178,7 +178,561 @@ implicit none
 
 call test_template()
 
-end program template_nested`
+end program template_nested`,
+    template_travel: `module math
+
+    implicit none
+    private
+    public :: add_real, slash_real
+
+contains
+
+    pure function add_real(x, y) result(total)
+        real, intent(in) :: x, y
+        real :: total
+        total = x + y
+    end function
+
+    pure function slash_real(x, y) result(total)
+        real, intent(in) :: x, y
+        real :: total
+        total = x / y
+    end function
+
+end module
+
+module travel
+
+    use math
+    implicit none
+    private 
+    public :: travel_tmpl
+
+    requirement operations(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
+        type :: D; end type
+        type :: T; end type
+        type :: S; end type
+
+        pure function plus_D(l, r) result(total)
+            type(D), intent(in) :: l, R
+            type(D) :: total
+        end function
+
+        pure function plus_T(l, r) result(total)
+            type(T), intent(in) :: l, R
+            type(T) :: total
+        end function
+
+        pure function D_divided_by_T(n, d) result(quotient)
+            type(D), intent(in) :: n
+            type(T), intent(in) :: d
+            type(S) :: quotient
+        end function
+
+        pure function D_divided_by_S(n, d) result(quotient)
+            type(D), intent(in) :: n
+            type(S), intent(in) :: d
+            type(T) :: quotient
+        end function
+    end requirement
+
+    template travel_tmpl(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
+        requires operations(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
+        private
+        public :: avg_S_from_T
+    contains
+        pure function avg_S_from_T(d1, t1, d2, t2) result(avg)
+            type(D), intent(in) :: d1, d2
+            type(T), intent(in) :: t1, t2
+            type(S) :: avg
+            avg = D_divided_by_T(plus_D(d1, d2), plus_T(t1, t2))
+        end function
+        
+        pure function avg_S_from_S(d1, s1, d2, s2) result(avg)
+            type(D), intent(in) :: d1, d2
+            type(S), intent(in) :: s1, s2
+            type(S) :: avg
+            avg = avg_S_from_T(d1, D_divided_by_S(d1, s1), d2, D_divided_by_S(d2, s2))
+        end function
+    end template
+
+end module
+
+module template_travel_m
+
+    use math
+    use travel
+    implicit none
+
+contains
+
+    subroutine test_template()
+        instantiate travel_tmpl(real, real, real, add_real, add_real, slash_real, slash_real), &
+            only: avg_real_S_from_T => avg_S_from_T
+        instantiate travel_tmpl(real, real, real, add_real, add_real, slash_real, slash_real), &
+            only: avg_real_S_from_S => avg_S_from_S
+        real :: s1, s2
+        s1 = avg_real_S_from_T(1.0, 3.0, 1.5, 4.0)
+        s2 = avg_real_S_from_S(1.1, 0.5, 2.0, 0.75)
+        print *, "s1=", s1
+        print *, "s2=", s2
+    end subroutine
+
+end module
+
+program template_travel
+use template_travel_m
+implicit none
+
+call test_template()
+
+end program template_travel`,
+    template_triple: `module Math_integer_m
+
+    implicit none
+    private
+    public :: add_integer
+  
+  contains
+  
+    pure function add_integer(x, y) result(result)
+      integer, intent(in) :: x, y
+      integer :: result
+      result = x + y
+    end function
+  
+    pure function minus_integer(x, y) result(result)
+      integer, intent(in) :: x, y
+      integer :: result
+      result = x - y
+    end function
+  
+    pure function max_integer(x, y) result(result)
+      integer, intent(in) :: x, y
+      integer :: result
+      result = max(x, y)
+    end function
+  
+    pure function min_integer(x, y) result(result)
+      integer, intent(in) :: x, y
+      integer :: result
+      result = min(x, y)
+    end function
+  
+    pure function zero_integer() result(result)
+      integer :: result
+      result = 0
+    end function
+  
+    pure function one_integer() result(result)
+      integer :: result
+      result = 1
+    end function
+  
+  end module
+  
+  module Math_real_m
+  
+    implicit none
+    private
+    public :: add_real
+  
+  contains
+  
+    pure function add_real(x, y) result(result)
+      real, intent(in) :: x, y
+      real :: result
+      result = x + y
+    end function
+  
+    pure function minus_real(x, y) result(result)
+      real, intent(in) :: x, y
+      real :: result
+      result = x - y
+    end function
+  
+    pure function slash_real(x, y) result(result)
+      real, intent(in) :: x, y
+      real :: result
+      result = x / y
+    end function
+  
+    pure function max_real(x, y) result(result)
+      real, intent(in) :: x, y
+      real :: result
+      result = max(x, y)
+    end function
+  
+    pure function min_real(x, y) result(result)
+      real, intent(in) :: x, y
+      real :: result
+      result = min(x, y)
+    end function
+  
+    pure function zero_real() result(result)
+      real :: result
+      result = 0.0
+    end function
+  
+    pure function one_real() result(result)
+      real :: result
+      result = 1.0
+    end function
+  
+  end module
+  
+  module triple_m
+  
+    implicit none
+    private
+    public :: triple_tmpl
+  
+    requirement magma_r(T, plus_T)
+      type :: T; end type
+  
+      pure function plus_T(l, r) result(total)
+        type(T), intent(in) :: l, r
+        type(T) :: total
+      end function
+    end requirement
+  
+    template triple_tmpl(T, plus_T)
+      requires magma_r(T, plus_T)
+      private
+      public :: triple_l, triple_r
+    contains
+      pure function triple_l(t) result(result)
+        type(T), intent(in) :: t
+        type(T) :: result
+        result = plus_T(plus_T(t, t), t)
+      end function
+      
+      pure function triple_r(t) result(result)
+        type(T), intent(in) :: t
+        type(T) :: result
+        result = plus_T(t, plus_T(t, t))
+      end function
+    end template
+  
+  end module
+  
+  module use_triple_m
+  
+    use Math_integer_m
+    use Math_real_m
+    use triple_m
+  
+  contains
+  
+    subroutine test_add_triples()
+      instantiate triple_tmpl(integer, add_integer), &
+        only: triple_add_l => triple_l, &
+              triple_add_r => triple_r
+      integer :: tal, tar
+      tal = triple_add_l(7)
+      tar = triple_add_r(7)
+      print *, "tal = ", tal, " tar = ", tar
+    end subroutine
+  
+    subroutine test_minus_triples()
+      instantiate triple_tmpl(real, minus_real), &
+        only: triple_minus_l => triple_l, &
+              triple_minus_r => triple_r
+      real :: tml, tmr
+      tml = triple_minus_l(7.0)
+      tmr = triple_minus_r(7.0)
+      print *, "tml = ", tml, " tmr = ", tmr
+    end subroutine
+  
+    subroutine test_max_triples()
+      instantiate triple_tmpl(real, max_real), &
+        only: triple_max_l => triple_l, &
+              triple_max_r => triple_r
+      real :: tmaxl, tmaxr
+      tmaxl = triple_max_l(7.0)
+      tmaxr = triple_max_r(7.0)
+      print *, "tmaxl =", tmaxl, " tmaxr =", tmaxr
+    end subroutine
+  
+  end module
+  
+  program template_triple
+  use use_triple_m
+  
+  call test_add_triples()
+  call test_minus_triples()
+  call test_max_triples()
+  
+  end program template_triple`,
+    template_array_01b: `module template_array_01b_m
+
+    implicit none
+    private
+    public :: test_template
+
+    requirement r(t)
+        type :: t; end type
+    end requirement
+
+    template array_tmpl(t)
+        requires r(t)
+        private
+        public :: insert_t
+    contains
+        function insert_t(n, lst, i) result(r)
+            integer, intent(in) :: n
+            type(t), intent(in) :: lst(n), i
+            type(t) :: r
+            lst(1) = i
+            r = lst(1)
+        end function
+    end template
+
+contains
+
+    subroutine test_template()
+        instantiate array_tmpl(integer), only: insert_int => insert_t
+        integer :: a(1), i, r
+        a(1) = 0
+        i = 1
+        print *, a(1)
+        r = insert_int(size(a), a, i)
+        print *, a(1)
+    end subroutine
+
+end module
+
+program template_array_01b
+
+    use template_array_01b_m
+    implicit none
+
+    call test_template()
+
+end`,
+    template_array_02b: `module template_array_02b_math
+
+    implicit none
+    private
+    public :: add_integer, zero_integer, add_real, zero_real
+
+contains
+
+    pure function add_integer(x, y) result(r)
+        integer, intent(in) :: x, y
+        integer :: r
+        r = x + y
+    end function
+
+    pure function zero_integer(x) result(r)
+        integer, intent(in) :: x
+        integer :: r
+        r = 0
+    end function
+
+    pure function add_real(x, y) result(r)
+        real, intent(in) :: x, y
+        real :: r
+        r = x + y
+    end function
+
+    pure function zero_real(x) result(r)
+        real, intent(in) :: x
+        real :: r
+        r = 0
+    end function
+
+end module
+
+module template_array_02b_m
+
+    use template_array_02b_math
+    implicit none
+    private
+    public :: test_template
+
+    requirement operations(t, plus_t, zero_t)
+        type :: t; end type
+
+        pure function plus_t(l, r) result(rs)
+            type(t), intent(in) :: l, r
+            type(t) :: rs
+        end function
+
+        pure function zero_t(l) result(rs)
+            type(t), intent(in) :: l
+            type(t) :: rs
+        end function
+    end requirement
+
+    template array_tmpl(t, plus_t, zero_t)
+        requires operations(t, plus_t, zero_t)
+        private
+        public :: mysum_t
+    contains
+        function mysum_t(n, a) result(r)
+            integer, intent(in) :: n
+            type(t), intent(in) :: a(n)
+            type(t) :: r
+            integer :: i
+            r = zero_t(a(1))
+            do i = 1, size(a)
+                r = plus_t(r, a(i))
+            end do
+        end function
+    end template
+
+contains
+
+    subroutine test_template()
+        instantiate array_tmpl(integer, add_integer, zero_integer), only: mysum_integer => mysum_t
+        integer :: a(10), i, s
+        do i = 1, size(a)
+            a(i) = i
+        end do
+        s = mysum_integer(size(a), a)
+        print *, s
+    end subroutine
+
+end module
+
+program template_array_02b
+
+    use template_array_02b_m
+    implicit none
+
+    call test_template()
+
+end`,
+    template_array_03: `module math
+
+    implicit none
+    private
+    public :: add_integer, zero_integer, add_real, zero_real, mult_integer, mult_real
+
+contains
+
+    pure function add_integer(x, y) result(r)
+        integer, intent(in) :: x, y
+        integer :: r
+        r = x + y
+    end function
+
+    pure function zero_integer(x) result(r)
+        integer, intent(in) :: x
+        integer :: r
+        r = 0
+    end function
+
+    pure function mult_integer(x, y) result(r)
+        integer, intent(in) :: x, y
+        integer :: r
+        r = x * y
+    end function
+
+    pure function add_real(x, y) result(r)
+        real, intent(in) :: x, y
+        real :: r
+        r = x + y
+    end function
+
+    pure function zero_real(x) result(r)
+        real, intent(in) :: x
+        real :: r
+        r = 0
+    end function
+
+    pure function mult_real(x, y) result(r)
+        real, intent(in) :: x, y
+        real :: r
+        r = x * y
+    end function
+
+end module
+
+module template_array_03_m
+
+    use math
+    implicit none
+    private
+    public :: test_template
+
+    requirement operations(t, plus_t, zero_t, mult_t)
+
+        type :: t; end type
+
+        pure function plus_t(l, r) result(result)
+            type(t), intent(in) :: l, r
+            type(t) :: result
+        end function
+
+        pure function zero_t(x) result(result)
+            type(t), intent(in) :: x
+            type(t) :: result
+        end function
+
+        pure function mult_t(l, r) result(result)
+            type(t), intent(in) :: l, r
+            type(t) :: result
+        end function
+
+    end requirement
+!
+    template array_tmpl(t, plus_t, zero_t, mult_t)
+
+        requires operations(t, plus_t, zero_t, mult_t)
+        private
+        public :: mymatmul_t
+
+    contains
+
+        subroutine mymatmul_t(i, j, k, a, b, r)
+            integer, parameter, intent(in) :: i, j, k
+            type(t), intent(in) :: a(i,j), b(j,k)
+            type(t) :: r(i,k)
+            integer, parameter :: x, y, z
+            type(t) :: elem
+            do x = 1, i
+                do z = 1, k
+                    elem = zero_t(a(1,1))
+                    do y = 1, j
+                        elem = plus_t(elem, mult_t(a(x,y), b(y,z)))
+                    end do
+                    r(x,z) = elem
+                end do
+            end do
+        end subroutine
+
+    end template
+
+contains
+
+    subroutine test_template()
+        integer :: arr(2,2)
+        integer :: r(2,2)
+        arr(1,1) = 1
+        arr(1,2) = 1
+        arr(2,1) = 0
+        arr(2,2) = 1
+        instantiate array_tmpl(integer, add_integer, zero_integer, mult_integer), &
+            only: mymatmul_int => mymatmul_t
+        call mymatmul_int(2, 2, 2, arr, arr, r)
+        print *, r(1,1)
+        print *, r(1,2)
+        print *, r(2,1)
+        print *, r(2,2)
+    end subroutine
+
+end module
+
+program template_array_03
+
+    use template_array_03_m
+    implicit none
+
+    call test_template()
+
+end`
     }
 }
 
