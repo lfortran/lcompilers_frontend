@@ -41,7 +41,8 @@ function getLfortranExportedFuncs() {
     });
 }
 
-function define_imports(memory, outputBuffer, exit_code, stdout_print) {
+var memory;
+function define_imports(outputBuffer, exit_code, stdout_print) {
     const flushBuffer = () => {
         stdout_print(outputBuffer.join(""));
         outputBuffer.length = 0;
@@ -106,15 +107,6 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
     return imports;
 }
 
-async function run_wasm(bytes, imports) {
-    try {
-        var res = await WebAssembly.instantiate(bytes, imports);
-        const { _lcompilers_main } = res.instance.exports;
-        _lcompilers_main();
-    } catch(e) { return e; }
-    return "Success"
-}
-
 async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
     const compiler_funcs = await getLfortranExportedFuncs();
 
@@ -158,16 +150,20 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
     lfortran_funcs.execute_code = async function (bytes, stdout_print) {
         var exit_code = {val: 1}; /* non-zero exit code */
         var outputBuffer = [];
-        var memory = new WebAssembly.Memory({ initial: 100, maximum: 100 }); // fixed 6.4 Mb memory currently
-        var imports = define_imports(memory, outputBuffer, exit_code, stdout_print);
-        var err_msg = await run_wasm(bytes, imports);
-        stdout_print(outputBuffer.join(""));
-        if (exit_code.val == 0) {
-            return;
+        var imports = define_imports(outputBuffer, exit_code, stdout_print);
+        try {
+            var res = await WebAssembly.instantiate(bytes, imports);
+            memory = res.instance.exports.memory;
+            res.instance.exports._start();
+            stdout_print(outputBuffer.join(""));
+        } catch(err_msg) {
+            stdout_print(outputBuffer.join(""));
+            if (exit_code.val == 0) {
+                return;
+            }
+            console.log(err_msg);
+            stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.`);
         }
-        console.log(err_msg);
-        stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.`);
-        return 0;
     };
 }
 
