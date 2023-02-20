@@ -102,7 +102,7 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
         try { return compiler_funcs.emit_asr_from_source(source_code); }
         catch (e) { console.log(e); myPrint(e + "\nERROR: ASR could not be generated from the code"); return 0; }
     }
-        ;
+
     lfortran_funcs.emit_wat_from_source = function (source_code) {
         try { return compiler_funcs.emit_wat_from_source(source_code); }
         catch (e) { console.log(e); myPrint(e + "\nERROR: WAT could not be generated from the code"); return 0; }
