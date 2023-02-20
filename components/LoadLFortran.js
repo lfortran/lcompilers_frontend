@@ -53,6 +53,7 @@ function define_imports(outputBuffer, exit_code, stdout_print) {
         const strLen = mem_data.getInt32(4, true);
         const s =  new TextDecoder("utf8").decode(new Uint8Array(memory.buffer, strLoc, strLen));
         outputBuffer.push(s);
+        return 0;
     }
     const proc_exit = (exit_code_val) => exit_code.val = exit_code_val;
     const cpu_time = (time) => (Date.now() / 1000); // Date.now() returns milliseconds, so divide by 1000
