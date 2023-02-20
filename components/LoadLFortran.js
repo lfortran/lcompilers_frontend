@@ -161,11 +161,12 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
         var memory = new WebAssembly.Memory({ initial: 100, maximum: 100 }); // fixed 6.4 Mb memory currently
         var imports = define_imports(memory, outputBuffer, exit_code, stdout_print);
         var err_msg = await run_wasm(bytes, imports);
+        stdout_print(outputBuffer.join(""));
         if (exit_code.val == 0) {
-            return 1;
+            return;
         }
         console.log(err_msg);
-        myPrint(err_msg + "\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.");
+        stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.`);
         return 0;
     };
 }
