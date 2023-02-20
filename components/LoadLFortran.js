@@ -6,36 +6,12 @@ function getLfortranExportedFuncs() {
     return new Promise((resolve, reject) => {
         Module.onRuntimeInitialized = function () {
             resolve({
-                emit_ast_from_source: Module.cwrap(
-                    "emit_ast_from_source",
-                    "string",
-                    ["string"]
-                ),
-                emit_asr_from_source: Module.cwrap(
-                    "emit_asr_from_source",
-                    "string",
-                    ["string"]
-                ),
-                emit_wat_from_source: Module.cwrap(
-                    "emit_wat_from_source",
-                    "string",
-                    ["string"]
-                ),
-                emit_cpp_from_source: Module.cwrap(
-                    "emit_cpp_from_source",
-                    "string",
-                    ["string"]
-                ),
-                emit_py_from_source: Module.cwrap(
-                    "emit_wat_from_source",
-                    "string",
-                    ["string"]
-                ),
-                emit_wasm_from_source: Module.cwrap(
-                    "emit_wasm_from_source",
-                    "string",
-                    ["string"]
-                ),
+                emit_ast_from_source: Module.cwrap("emit_ast_from_source", "string", ["string"]),
+                emit_asr_from_source: Module.cwrap("emit_asr_from_source", "string", ["string"]),
+                emit_wat_from_source: Module.cwrap("emit_wat_from_source", "string", ["string"]),
+                emit_cpp_from_source: Module.cwrap("emit_cpp_from_source", "string", ["string"]),
+                emit_py_from_source: Module.cwrap("emit_wat_from_source", "string", ["string"]),
+                emit_wasm_from_source: Module.cwrap("emit_wasm_from_source", "string", ["string"]),
             });
         };
     });
