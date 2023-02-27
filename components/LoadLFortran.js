@@ -17,15 +17,21 @@ function getLfortranExportedFuncs() {
     });
 }
 
-function define_imports(memory, outputBuffer, exit_code, stdout_print) {
-    const printNum = (num) => outputBuffer.push(num.toString());
-    const printStr = (startIdx, strSize) => outputBuffer.push(
-        new TextDecoder("utf8").decode(new Uint8Array(memory.buffer, startIdx, strSize)));
+var memory;
+function define_imports(outputBuffer, exit_code, stdout_print) {
     const flushBuffer = () => {
-        stdout_print(outputBuffer.join(" ") + "\n");
+        stdout_print(outputBuffer.join(""));
         outputBuffer.length = 0;
     }
-    const set_exit_code = (exit_code_val) => exit_code.val = exit_code_val;
+    const fd_write = (file_type, iov_location, no_of_iovs, return_val_mem_loc) => {
+        const mem_data = new DataView(memory.buffer, iov_location, Int32Array.BYTES_PER_ELEMENT * 2);
+        const strLoc = mem_data.getInt32(0, true);
+        const strLen = mem_data.getInt32(4, true);
+        const s =  new TextDecoder("utf8").decode(new Uint8Array(memory.buffer, strLoc, strLen));
+        outputBuffer.push(s);
+        return 0;
+    }
+    const proc_exit = (exit_code_val) => exit_code.val = exit_code_val;
     const cpu_time = (time) => (Date.now() / 1000); // Date.now() returns milliseconds, so divide by 1000
     const show_image = (cols, rows, arr) => {
         var arr2D_data = new DataView(memory.buffer, arr, Int32Array.BYTES_PER_ELEMENT * rows * cols);
@@ -41,7 +47,7 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
             imgData.data[i + 3] = 255; // alpha channel (from 0-255), 0 is transparent and 255 is fully visible
         }
         ctx.putImageData(imgData, 0, 0);
-        outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>`)
+        outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>\n`)
         flushBuffer();
     }
     const show_image_color = (cols, rows, arr) => {
@@ -59,35 +65,23 @@ function define_imports(memory, outputBuffer, exit_code, stdout_print) {
             imgData.data[i] = arr2D_data.getInt32(4*i, true);
         }
         ctx.putImageData(imgData, 0, 0);
-        outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>`)
+        outputBuffer.push(`<img alt="constructed image" src="${canvas.toDataURL('image/jpeg')}" height="${rows}" width="${cols}" style="aspect-ratio: 1 / 1;"/>\n`)
         flushBuffer();
     }
     var imports = {
+        wasi_snapshot_preview1: {
+            /* wasi functions */
+            fd_write: fd_write,
+            proc_exit: proc_exit,
+        },
         js: {
-            memory: memory,
-            /* functions */
-            print_i32: printNum,
-            print_i64: printNum,
-            print_f32: printNum,
-            print_f64: printNum,
-            print_str: printStr,
-            flush_buf: flushBuffer,
-            set_exit_code: set_exit_code,
+            /* custom functions */
             cpu_time: cpu_time,
             show_img: show_image,
             show_img_color: show_image_color
         },
     };
     return imports;
-}
-
-async function run_wasm(bytes, imports) {
-    try {
-        var res = await WebAssembly.instantiate(bytes, imports);
-        const { _lcompilers_main } = res.instance.exports;
-        _lcompilers_main();
-    } catch(e) { return e; }
-    return "Success"
 }
 
 async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
@@ -133,15 +127,20 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
     lfortran_funcs.execute_code = async function (bytes, stdout_print) {
         var exit_code = {val: 1}; /* non-zero exit code */
         var outputBuffer = [];
-        var memory = new WebAssembly.Memory({ initial: 100, maximum: 100 }); // fixed 6.4 Mb memory currently
-        var imports = define_imports(memory, outputBuffer, exit_code, stdout_print);
-        var err_msg = await run_wasm(bytes, imports);
-        if (exit_code.val == 0) {
-            return 1;
+        var imports = define_imports(outputBuffer, exit_code, stdout_print);
+        try {
+            var res = await WebAssembly.instantiate(bytes, imports);
+            memory = res.instance.exports.memory;
+            res.instance.exports._start();
+            stdout_print(outputBuffer.join(""));
+        } catch(err_msg) {
+            stdout_print(outputBuffer.join(""));
+            if (exit_code.val == 0) {
+                return;
+            }
+            console.log(err_msg);
+            stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.`);
         }
-        console.log(err_msg);
-        myPrint(err_msg + "\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.");
-        return 0;
     };
 }
 

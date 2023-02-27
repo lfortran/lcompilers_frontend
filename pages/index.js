@@ -67,9 +67,7 @@ export default function Home() {
                         new Uint8Array(compile_result),
                         (text) => stdout.push(text)
                     );
-                    if (exec_res) {
-                        setOutput(stdout.join(""));
-                    }
+                    setOutput(stdout.join(""));
                 }
             }
         } else if (key == "AST") {
