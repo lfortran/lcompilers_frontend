@@ -12,5 +12,3 @@ echo "{ \"id\": \"${latest_commit}\" }" > utils/commit.json
 
 export MY_ENV=$([[ ${GITHUB_REF} == "refs/heads/main" ]] && echo "production" || echo "development")
 npm run build
-npm run export
-echo "dev.lfortran.org" >> out/CNAME

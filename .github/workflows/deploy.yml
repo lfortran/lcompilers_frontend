@@ -40,6 +40,8 @@ jobs:
       shell: bash -l {0}
       run: |
         ./build.sh
+        npm run export
+        echo "dev.lfortran.org" >> out/CNAME
 
     - name: Misc Steps
       shell: bash -l {0}
