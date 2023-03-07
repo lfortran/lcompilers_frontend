@@ -20,6 +20,8 @@ if [[ ${git_ref} == "refs/heads/main" ]]; then
     git fetch origin
     git checkout gh-pages
     rm -rf *
+    mv $D/deploy/* .
+    touch .nojekyll
 else
     # Test version - pipeline triggered from pull request
     deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
@@ -39,10 +41,8 @@ else
     mkdir -p lfortran/$PR_NUMBER
     cd lfortran/$PR_NUMBER
     rm -rf *
+    mv $D/deploy/* .
 fi
-
-mv $D/deploy/* .
-touch .nojekyll
 
 git config user.email "noreply@deploy"
 git config user.name "Deploy"
