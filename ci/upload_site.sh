@@ -38,6 +38,7 @@ else
 
     mkdir -p lfortran/$PR_NUMBER
     cd lfortran/$PR_NUMBER
+    rm -rf *
 fi
 
 mv $D/deploy/* .
