@@ -17,6 +17,9 @@ if [[ ${git_ref} == "refs/heads/main" ]]; then
     cp deploy/ $D/deploy -r
     git reset --hard
     git clean -dfx
+    git fetch origin
+    git checkout gh-pages
+    rm -rf *
 else
     # Test version - pipeline triggered from pull request
     deploy_repo_pull="https://github.com/lfortran/pull_request_preview.git"
@@ -29,11 +32,14 @@ else
 
     git clone ${deploy_repo_pull} pr_preview
     cd pr_preview
+
+    git fetch origin
+    git checkout gh-pages
+
+    mkdir -p lfortran/$PR_NUMBER
+    cd lfortran/$PR_NUMBER
 fi
 
-git fetch origin
-git checkout gh-pages
-rm -rf *
 mv $D/deploy/* .
 touch .nojekyll
 
