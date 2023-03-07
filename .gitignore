@@ -4,7 +4,6 @@
 public/lfortran.js
 public/lfortran.wasm
 public/lfortran.data
-utils/commit.json
 
 # dependencies
 /node_modules

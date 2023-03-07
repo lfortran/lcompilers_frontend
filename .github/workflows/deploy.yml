@@ -39,9 +39,11 @@ jobs:
     - name: Build Site
       shell: bash -l {0}
       run: |
-        ./build.sh
+        ./build.py
         npm run export
         echo "dev.lfortran.org" >> out/CNAME
+      env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
 
     - name: Misc Steps
       shell: bash -l {0}
@@ -53,6 +55,7 @@ jobs:
       run: ci/upload_site.sh
       env:
           GIT_PR_PREVIEW_PRIVATE_SSH_KEY: ${{ secrets.GIT_PR_PREVIEW_PRIVATE_SSH_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
 
     - name: Create Deployment Comment
       if: ${{ github.ref != 'refs/heads/main' && github.event.pull_request.head.repo.full_name == 'lfortran/lcompilers_frontend' }}
@@ -60,5 +63,5 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          Your site is deployed at https://lfortran.github.io/pull_request_preview
+          Your site is deployed at https://lfortran.github.io/pull_request_preview/lfortran/${{ github.event.pull_request.number }}
         reactions: 'rocket'
