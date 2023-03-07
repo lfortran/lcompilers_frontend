@@ -39,7 +39,7 @@ jobs:
     - name: Build Site
       shell: bash -l {0}
       run: |
-        ./build.sh
+        ./build.py
         npm run export
         echo "dev.lfortran.org" >> out/CNAME
 
