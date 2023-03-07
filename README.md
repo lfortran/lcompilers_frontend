@@ -17,7 +17,7 @@ Then build the website:
 
 Finally serve a local version using:
 ```
-MY_ENV="production" npm run dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

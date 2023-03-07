@@ -40,6 +40,8 @@ jobs:
       shell: bash -l {0}
       run: |
         ./build.sh
+        npm run export
+        echo "dev.lfortran.org" >> out/CNAME
 
     - name: Misc Steps
       shell: bash -l {0}
@@ -51,10 +53,6 @@ jobs:
       run: ci/upload_site.sh
       env:
           GIT_PR_PREVIEW_PRIVATE_SSH_KEY: ${{ secrets.GIT_PR_PREVIEW_PRIVATE_SSH_KEY }}
-
-    # At the start of each workflow run, GitHub automatically creates a unique GITHUB_TOKEN
-    # secret to use in your workflow. More details about it can be found at the below link.
-    # https://docs.github.com/en/actions/security-guides/automatic-token-authentication
 
     - name: Create Deployment Comment
       if: ${{ github.ref != 'refs/heads/main' && github.event.pull_request.head.repo.full_name == 'lfortran/lcompilers_frontend' }}
