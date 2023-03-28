@@ -131,7 +131,13 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
         try {
             var res = await WebAssembly.instantiate(bytes, imports);
             memory = res.instance.exports.memory;
+            const start_exec = performance.now();
             res.instance.exports._start();
+            const end_exec = performance.now();
+            const duration_exec = end_exec - start_exec;
+            const duration_compile = sessionStorage.getItem("duration_compile");
+            stdout_print(`Compilation time: ${duration_compile} ms \n`);
+            stdout_print(`Execution time: ${duration_exec} ms`);
             stdout_print(outputBuffer.join(""));
         } catch(err_msg) {
             stdout_print(outputBuffer.join(""));

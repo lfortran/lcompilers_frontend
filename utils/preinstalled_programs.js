@@ -59,7 +59,7 @@ end program`,
     call show_img_color(Nx, Ny, image_color)
     print *, "The Mandelbrot image in grayscale:"
     call show_img(Nx, Ny, image)
-    print *, "Done."
+    print *, "\n Done."
 end program mandelbrot`
     },
     experimental: {
