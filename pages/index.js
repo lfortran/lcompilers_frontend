@@ -68,9 +68,6 @@ export default function Home() {
                 }
                 else {
                     var stdout = [];
-                    const end_compile = performance.now();
-                    const duration_compile = end_compile - start_compile;
-                    sessionStorage.setItem("duration_compile", duration_compile);
                     const exec_res = await lfortran_funcs.execute_code(
                         new Uint8Array(compile_result),
                         (text) => stdout.push(text)
