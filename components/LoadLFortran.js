@@ -136,8 +136,8 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
             const end_exec = performance.now();
             const duration_exec = end_exec - start_exec;
             const duration_compile = sessionStorage.getItem("duration_compile");
-            stdout_print(`Compilation time: ${duration_compile} ms \n`);
-            stdout_print(`Execution time: ${duration_exec} ms`);
+            outputBuffer.push(`\nCompilation time: ${duration_compile} ms`);
+            outputBuffer.push(`\nExecution time: ${duration_exec} ms`);
             stdout_print(outputBuffer.join(""));
         } catch(err_msg) {
             stdout_print(outputBuffer.join(""));
