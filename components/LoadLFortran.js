@@ -145,7 +145,7 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
                 return;
             }
             console.log(err_msg);
-            stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.`);
+            stdout_print(`\n${err_msg}\nERROR: The code could not be executed. Either there is a runtime error or there is an issue at our end.\nExecution time: ${duration_exec} ms`);
         }
     };
 }
