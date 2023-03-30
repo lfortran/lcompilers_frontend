@@ -128,13 +128,24 @@ async function setup_lfortran_funcs(lfortran_funcs, myPrint) {
         var exit_code = {val: 1}; /* non-zero exit code */
         var outputBuffer = [];
         var imports = define_imports(outputBuffer, exit_code, stdout_print);
+        var start_exec, end_exec;
+        const printResults = () => {
+            const duration_exec = end_exec - start_exec;
+            const duration_compile = sessionStorage.getItem("duration_compile");
+            outputBuffer.push(`\nCompilation time: ${duration_compile} ms`);
+            outputBuffer.push(`\nExecution time: ${duration_exec} ms`);
+            stdout_print(outputBuffer.join(""));
+        }
         try {
             var res = await WebAssembly.instantiate(bytes, imports);
             memory = res.instance.exports.memory;
+            start_exec = performance.now();
             res.instance.exports._start();
-            stdout_print(outputBuffer.join(""));
+            end_exec = performance.now();
+            printResults();
         } catch(err_msg) {
-            stdout_print(outputBuffer.join(""));
+            end_exec = performance.now();
+            printResults();
             if (exit_code.val == 0) {
                 return;
             }

@@ -55,11 +55,16 @@ export default function Home() {
                 setActiveTab(key);
                 return;
             }
+            const start_compile = performance.now();
             const wasm_bytes_response = lfortran_funcs.compile_code(sourceCode);
+            const end_compile = performance.now();
+            const duration_compile = end_compile - start_compile;
+            sessionStorage.setItem("duration_compile", duration_compile);
             if (wasm_bytes_response) {
                 const [exit_code, ...compile_result] = wasm_bytes_response.split(",");
                 if (exit_code !== "0") {
-                    setOutput(ansi_up.ansi_to_html(compile_result)); // print compile-time error found by lfortran to output
+                     // print compile-time error found by lfortran to output
+                    setOutput(ansi_up.ansi_to_html(compile_result) + `\nCompilation Time: ${duration_compile} ms`);
                 }
                 else {
                     var stdout = [];

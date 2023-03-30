@@ -12,7 +12,7 @@ npm install
 
 Then build the website:
 ```
-./build.sh
+./build.py
 ```
 
 Finally serve a local version using:
