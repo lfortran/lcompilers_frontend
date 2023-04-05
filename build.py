@@ -11,14 +11,15 @@ def run_cmd(cmd, cwd=None):
         print("Command failed.")
         exit(1)
 
-def download_lfortran_file(latest_commit, filename):
-    run_cmd(f'curl "https://lfortran.github.io/wasm_builds/dev/{latest_commit}/{filename}" -o public/{filename}')
+def download_lfortran_file(commit, filename):
+    base_url = "https://lfortran.github.io/wasm_builds"
+    run_cmd(f'curl "{base_url}/{commit["build_type"]}/{commit["id"]}/{filename}" -o public/{filename}')
 
 commit = json.load(open("utils/commit.json"))
 
-download_lfortran_file(commit["id"], "lfortran.js")
-download_lfortran_file(commit["id"], "lfortran.wasm")
-download_lfortran_file(commit["id"], "lfortran.data")
+download_lfortran_file(commit, "lfortran.js")
+download_lfortran_file(commit, "lfortran.wasm")
+download_lfortran_file(commit, "lfortran.data")
 
 os.environ["MY_ENV"] = "production" if os.getenv("GITHUB_REF") == "refs/heads/main" else "development"
 run_cmd("npm run build")
