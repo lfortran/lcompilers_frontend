@@ -42,6 +42,7 @@ var lfortran_funcs = {
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
     const [sourceCode, setSourceCode] = useState(preinstalled_programs.basic.mandelbrot);
+    const [exampleName, setExampleName] = useState("mandelbrot");
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const isMobile = useIsMobile();
@@ -125,6 +126,8 @@ export default function Home() {
                         disabled={!moduleReady}
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
+                        exampleName={exampleName}
+                        setExampleName={setExampleName}
                         activeTab={activeTab}
                         handleUserTabChange={handleUserTabChange}
                         myHeight={myHeight}

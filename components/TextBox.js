@@ -7,7 +7,7 @@ const Editor = dynamic(import('./Editor'), {
   ssr: false
 })
 
-function TextBox({ disabled, sourceCode, setSourceCode, activeTab, handleUserTabChange, myHeight }) {
+function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight }) {
     var menu_items = [];
     for (let category in preinstalled_programs) {
         var category_examples = []
@@ -15,7 +15,10 @@ function TextBox({ disabled, sourceCode, setSourceCode, activeTab, handleUserTab
             category_examples.push({
                 key: example,
                 label: example,
-                onClick: () => { setSourceCode(preinstalled_programs[category][example]) }
+                onClick: () => {
+                    setSourceCode(preinstalled_programs[category][example]);
+                    setExampleName(example);
+                }
             });
         }
 
@@ -41,7 +44,7 @@ function TextBox({ disabled, sourceCode, setSourceCode, activeTab, handleUserTab
     return (
         <div className="card-container" style={{height: "100%" }}>
             <Tabs tabBarExtraContent={extraOperations} style={{ height: "100%" }}>
-                <TabPane tab="main.f90" key="1" style={{ height: myHeight }}>
+                <TabPane tab={`${exampleName}.f90`} key="1" style={{ height: myHeight }}>
                     <Editor
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
