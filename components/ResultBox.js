@@ -2,11 +2,12 @@ import { Button } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { Segmented } from "antd";
 
-function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
+function ResultBox({ activeTab, output, handleUserTabChange, myHeight, openNotification }) {
     function copyTextToClipboard() {
         const parser = new DOMParser();
         const doc = parser.parseFromString(output, 'text/html');
         navigator.clipboard.writeText(doc.documentElement.textContent);
+        openNotification(`${activeTab} output copied`, "bottomRight");
     }
     return (
         <div className="card-container">

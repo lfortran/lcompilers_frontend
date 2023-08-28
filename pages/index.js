@@ -140,6 +140,7 @@ export default function Home() {
                             output={output}
                             handleUserTabChange={handleUserTabChange}
                             myHeight={myHeight}
+                            openNotification={openNotification}
                         ></ResultBox>
                     ) : (
                         <div style={{height: myHeight}}>
