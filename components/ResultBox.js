@@ -4,7 +4,9 @@ import { Segmented } from "antd";
 
 function ResultBox({ activeTab, output, handleUserTabChange, myHeight }) {
     function copyTextToClipboard() {
-        navigator.clipboard.writeText(output);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(output, 'text/html');
+        navigator.clipboard.writeText(doc.documentElement.textContent);
     }
     return (
         <div className="card-container">
