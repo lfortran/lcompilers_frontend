@@ -54,7 +54,7 @@ export default function Home() {
         const gist = 'https://gist.githubusercontent.com/';
         const urlParams = new URLSearchParams(url);
         if(urlParams.get('code')){
-        setSourceCode(atob(urlParams.get('code')));
+        setSourceCode(decodeURIComponent(urlParams.get('code')));
         }
 
         if(urlParams.get('github')){
