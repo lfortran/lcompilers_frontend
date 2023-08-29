@@ -98,10 +98,6 @@ export default function Home() {
             }
         } else if (key == "PY") {
             setOutput("Support for PY is not yet enabled");
-            // const res = lfortran_funcs.emit_py_from_source(sourceCode);
-            // if (res) {
-            //     setOutput(ansi_up.ansi_to_html(res));
-            // }
         } else {
             console.log("Unknown key:", key);
             setOutput("Unknown key: " + key);
