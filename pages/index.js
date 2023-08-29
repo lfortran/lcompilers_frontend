@@ -4,7 +4,7 @@ import LoadLFortran from "../components/LoadLFortran";
 import preinstalled_programs from "../utils/preinstalled_programs";
 import { useIsMobile } from "../components/useIsMobile";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Col, Row, Spin } from "antd";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -48,6 +48,28 @@ export default function Home() {
     const isMobile = useIsMobile();
 
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
+
+    useEffect(() => {
+        const url = window.location.search;
+        const gist = 'https://gist.githubusercontent.com/';
+        const urlParams = new URLSearchParams(url);
+        if(urlParams.get('code')){
+        setSourceCode(urlParams.get('code'));
+        }
+
+        if(urlParams.get('github')){
+            const gistUrl = gist+urlParams.get('github')+ '/raw/';
+            fetch(gistUrl)
+            .then(response => response.text())
+            .then(data => {
+        console.log(data);
+        setSourceCode(data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+        }
+    }, []);
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
