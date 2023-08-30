@@ -50,17 +50,17 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
+        if(moduleReady) { fetchData();  handleUserTabChange("STDOUT"); }
+      }, [moduleReady]);
+
+    async function fetchData() {
         const url = window.location.search;
         const gist = "https://gist.githubusercontent.com/";
         const urlParams = new URLSearchParams(url);
       
         if (urlParams.get("code")) {
           setSourceCode(decodeURIComponent(urlParams.get("code")));
-          openNotification(
-            `${activeTab} Source Code loaded from url.`,
-            "bottomRight"
-          );
-          handleUserTabChange("STDOUT");
+          openNotification( "Source Code loaded from url.", "bottomRight"); 
         } else if (urlParams.get("gist")) {
           const gistUrl = gist + urlParams.get("gist") + "/raw/";
           fetch(gistUrl)
@@ -68,29 +68,24 @@ export default function Home() {
             .then((data) => {
               setSourceCode(data);
               openNotification(
-                `${activeTab} Source Code loaded from gist.`,
+                "Source Code loaded from gist.",
                 "bottomRight"
               );
-              handleUserTabChange("STDOUT");
-            })
-            .then((d) => {
-              handleUserTabChange(activeTab);
+              
             })
             .catch((error) => {
               console.error("Error fetching data:", error);
-              openNotification(`${activeTab} error fetching.`, "bottomRight");
+            //   openNotification("error fetching .", "bottomRight");
+            setSourceCode(preinstalled_programs.basic.mandelbrot);
             });
-        } else {
-          openNotification(
-            `${activeTab} Unknown parameter Supplied, loading default code.`,
-            "bottomRight"
-          );
-          setSourceCode(preinstalled_programs.basic.mandelbrot);
-          handleUserTabChange(activeTab);
         }
-      }, []);
+         else {
+          openNotification("Unknown parameter Supplied, loading default code.","bottomRight");
+          setSourceCode(preinstalled_programs.basic.mandelbrot);
+            }
+         } 
+            
 
-      
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
             if(sourceCode.trim() === ""){
