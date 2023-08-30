@@ -51,26 +51,46 @@ export default function Home() {
 
     useEffect(() => {
         const url = window.location.search;
-        const gist = 'https://gist.githubusercontent.com/';
+        const gist = "https://gist.githubusercontent.com/";
         const urlParams = new URLSearchParams(url);
-        if(urlParams.get('code')){
-        setSourceCode(decodeURIComponent(urlParams.get('code')));
+      
+        if (urlParams.get("code")) {
+          setSourceCode(decodeURIComponent(urlParams.get("code")));
+          openNotification(
+            `${activeTab} Source Code loaded from url.`,
+            "bottomRight"
+          );
+          handleUserTabChange("STDOUT");
+        } else if (urlParams.get("gist")) {
+          const gistUrl = gist + urlParams.get("gist") + "/raw/";
+          fetch(gistUrl)
+            .then((response) => response.text())
+            .then((data) => {
+              setSourceCode(data);
+              openNotification(
+                `${activeTab} Source Code loaded from gist.`,
+                "bottomRight"
+              );
+              handleUserTabChange("STDOUT");
+            })
+            .then((d) => {
+              handleUserTabChange(activeTab);
+            })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+              openNotification(`${activeTab} error fetching.`, "bottomRight");
+            });
+        } else {
+          openNotification(
+            `${activeTab} Unknown parameter Supplied, loading default code.`,
+            "bottomRight"
+          );
+          setSourceCode(preinstalled_programs.basic.mandelbrot);
+          handleUserTabChange(activeTab);
         }
+      }, []);
 
-        if(urlParams.get('github')){
-            const gistUrl = gist+urlParams.get('github')+ '/raw/';
-            fetch(gistUrl)
-            .then(response => response.text())
-            .then(data => {
-        console.log(data);
-        setSourceCode(data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-        }
-    }, []);
-
+      
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
             if(sourceCode.trim() === ""){
