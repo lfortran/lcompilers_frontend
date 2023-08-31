@@ -21,5 +21,12 @@ download_lfortran_file(commit, "lfortran.js")
 download_lfortran_file(commit, "lfortran.wasm")
 download_lfortran_file(commit, "lfortran.data")
 
-os.environ["MY_ENV"] = "production" if os.getenv("GITHUB_REF") == "refs/heads/main" else "development"
+if os.getenv("GITHUB_REF") is None or os.getenv("GITHUB_REF") == "refs/heads/main":
+    # For local development environment or for production environment,
+    # the base path is empty
+    os.environ["SITE_BASE_PATH"] = ""
+else:
+    # For test environment
+    os.environ["SITE_BASE_PATH"] = f"/pull_request_preview/lfortran/{os.getenv('PR_NUMBER')}"
+
 run_cmd("npm run build")

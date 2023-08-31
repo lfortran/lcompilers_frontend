@@ -1,5 +1,6 @@
 import Script from "next/script";
-import { useCallback } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect } from "react";
 
 // lfortran exported functions
 function getLfortranExportedFuncs() {
@@ -163,6 +164,16 @@ function LoadLFortran({
     myPrint,
     handleUserTabChange
 }) {
+
+    const { basePath } = useRouter();
+
+    useEffect(() => {
+        window.Module = {
+            locateFile: (filePath) => `${basePath}/${filePath}`
+        }
+        return () => { window.Module = null }
+    }, [basePath]);
+
     const setupLFortran = useCallback(async () => {
         await setup_lfortran_funcs(lfortran_funcs, myPrint);
         setModuleReady(true);
@@ -173,7 +184,7 @@ function LoadLFortran({
 
     return (
         <div>
-            <Script src={`./lfortran.js`} onLoad={setupLFortran}></Script>
+            <Script src={`${basePath}/lfortran.js`} onLoad={setupLFortran}></Script>
         </div>
     );
 }
