@@ -50,8 +50,12 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-        if(moduleReady) { fetchData();  handleUserTabChange("STDOUT"); }
+            if(moduleReady) { fetchData(); }
       }, [moduleReady]);
+
+      useEffect(() => {
+            if(moduleReady){handleUserTabChange("STDOUT"); }
+  }, []);
 
     async function fetchData() {
         const url = window.location.search;
@@ -59,29 +63,27 @@ export default function Home() {
         const urlParams = new URLSearchParams(url);
       
         if (urlParams.get("code")) {
-          setSourceCode(decodeURIComponent(urlParams.get("code")));
-          openNotification( "Source Code loaded from url.", "bottomRight"); 
+            setSourceCode(decodeURIComponent(urlParams.get("code")));
         } else if (urlParams.get("gist")) {
-          const gistUrl = gist + urlParams.get("gist") + "/raw/";
-          fetch(gistUrl)
-            .then((response) => response.text())
-            .then((data) => {
-              setSourceCode(data);
-              openNotification(
-                "Source Code loaded from gist.",
-                "bottomRight"
-              );
-              
-            })
-            .catch((error) => {
-              console.error("Error fetching data:", error);
-            //   openNotification("error fetching .", "bottomRight");
-            setSourceCode(preinstalled_programs.basic.mandelbrot);
-            });
+            const gistUrl = gist + urlParams.get("gist") + "/raw/";
+            fetch(gistUrl)
+                .then((response) => response.text())
+                .then((data) => {
+                setSourceCode(data);
+                openNotification(
+                    "Source Code loaded from gist.",
+                    "bottomRight"
+                );
+                
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    openNotification("error fetching .", "bottomRight");
+                    setSourceCode(preinstalled_programs.basic.mandelbrot);
+                });
         }
          else {
-          openNotification("Unknown parameter Supplied, loading default code.","bottomRight");
-          setSourceCode(preinstalled_programs.basic.mandelbrot);
+             setSourceCode(preinstalled_programs.basic.mandelbrot);
             }
          } 
             
