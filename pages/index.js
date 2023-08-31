@@ -50,18 +50,18 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-           fetchData(); 
+           fetchData();
       }, []);
 
       useEffect(() => {
             if(moduleReady){handleUserTabChange("STDOUT"); }
-  }, []);
+    }, [moduleReady]);
 
     async function fetchData() {
         const url = window.location.search;
         const gist = "https://gist.githubusercontent.com/";
         const urlParams = new URLSearchParams(url);
-      
+
         if (urlParams.get("code")) {
             setSourceCode(decodeURIComponent(urlParams.get("code")));
         } else if (urlParams.get("gist")) {
@@ -74,15 +74,14 @@ export default function Home() {
                     "Source Code loaded from gist.",
                     "bottomRight"
                 );
-                
+
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
                 });
         }
-         } 
-            
+    }
 
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
