@@ -50,8 +50,8 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-            if(moduleReady) { fetchData(); }
-      }, [moduleReady]);
+           fetchData(); 
+      }, []);
 
       useEffect(() => {
             if(moduleReady){handleUserTabChange("STDOUT"); }
