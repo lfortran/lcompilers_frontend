@@ -79,12 +79,8 @@ export default function Home() {
                 .catch((error) => {
                     console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
-                    setSourceCode(preinstalled_programs.basic.mandelbrot);
                 });
         }
-         else {
-             setSourceCode(preinstalled_programs.basic.mandelbrot);
-            }
          } 
             
 
