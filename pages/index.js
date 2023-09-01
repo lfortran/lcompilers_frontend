@@ -41,8 +41,8 @@ var lfortran_funcs = {
 
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
-    const [sourceCode, setSourceCode] = useState(preinstalled_programs.basic.mandelbrot);
-    const [exampleName, setExampleName] = useState("mandelbrot");
+    const [sourceCode, setSourceCode] = useState("");
+    const [exampleName, setExampleName] = useState("main");
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const isMobile = useIsMobile();
@@ -79,6 +79,8 @@ export default function Home() {
                     console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
                 });
+        } else {
+            setSourceCode(preinstalled_programs.basic.mandelbrot);
         }
     }
 
