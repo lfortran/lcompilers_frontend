@@ -50,11 +50,11 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-           fetchData();
-      }, []);
+        fetchData();
+    }, []);
 
-      useEffect(() => {
-            if(moduleReady){handleUserTabChange("STDOUT"); }
+    useEffect(() => {
+        if(moduleReady) { handleUserTabChange("STDOUT"); }
     }, [moduleReady]);
 
     async function fetchData() {
@@ -69,12 +69,11 @@ export default function Home() {
             fetch(gistUrl)
                 .then((response) => response.text())
                 .then((data) => {
-                setSourceCode(data);
-                openNotification(
-                    "Source Code loaded from gist.",
-                    "bottomRight"
-                );
-
+                    setSourceCode(data);
+                    openNotification(
+                        "Source Code loaded from gist.",
+                        "bottomRight"
+                    );
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
