@@ -41,21 +41,24 @@ var lfortran_funcs = {
 
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
-    const [sourceCode, setSourceCode] = useState(preinstalled_programs.basic.mandelbrot);
-    const [exampleName, setExampleName] = useState("mandelbrot");
+    const [sourceCode, setSourceCode] = useState("");
+    const [exampleName, setExampleName] = useState("main");
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
+    const [dataFetch, setDataFetch] = useState(false);
     const isMobile = useIsMobile();
 
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-           fetchData();
-      }, []);
+        fetchData();
+    }, []);
 
-      useEffect(() => {
-            if(moduleReady){handleUserTabChange("STDOUT"); }
-    }, [moduleReady]);
+    useEffect(() => {
+        if(moduleReady && dataFetch) {
+            handleUserTabChange("STDOUT");
+        }
+    }, [moduleReady, dataFetch]);
 
     async function fetchData() {
         const url = window.location.search;
@@ -64,22 +67,26 @@ export default function Home() {
 
         if (urlParams.get("code")) {
             setSourceCode(decodeURIComponent(urlParams.get("code")));
+            setDataFetch(true);
         } else if (urlParams.get("gist")) {
             const gistUrl = gist + urlParams.get("gist") + "/raw/";
             fetch(gistUrl)
                 .then((response) => response.text())
                 .then((data) => {
-                setSourceCode(data);
-                openNotification(
-                    "Source Code loaded from gist.",
-                    "bottomRight"
-                );
-
+                    setSourceCode(data);
+                    setDataFetch(true);
+                    openNotification(
+                        "Source Code loaded from gist.",
+                        "bottomRight"
+                    );
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
                 });
+        } else {
+            setSourceCode(preinstalled_programs.basic.mandelbrot);
+            setDataFetch(true);
         }
     }
 
@@ -147,7 +154,6 @@ export default function Home() {
                 lfortran_funcs={lfortran_funcs}
                 openNotification={openNotification}
                 myPrint={setOutput}
-                handleUserTabChange={handleUserTabChange}
             ></LoadLFortran>
 
             <Row gutter={[16, 16]}>
