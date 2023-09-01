@@ -162,7 +162,6 @@ function LoadLFortran({
     lfortran_funcs,
     openNotification,
     myPrint,
-    handleUserTabChange
 }) {
 
     const { basePath } = useRouter();
@@ -179,7 +178,6 @@ function LoadLFortran({
         setModuleReady(true);
         openNotification("LFortran Module Initialized!", "bottomRight");
         console.log("LFortran Module Initialized!");
-        handleUserTabChange("STDOUT");
     }, [moduleReady]); // update the callback if the state changes
 
     return (
