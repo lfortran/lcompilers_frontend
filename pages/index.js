@@ -51,6 +51,7 @@ export default function Home() {
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
+        setSourceCode("");
         fetchData();
     }, []);
 
@@ -87,6 +88,9 @@ export default function Home() {
         } else {
             setSourceCode(preinstalled_programs.basic.mandelbrot);
             setDataFetch(true);
+            if(urlParams.size>0){
+                openNotification("Invalid Parameter Found.", "bottomRight");
+            }
         }
     }
 
