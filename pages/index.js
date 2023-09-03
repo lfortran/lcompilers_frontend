@@ -89,7 +89,7 @@ export default function Home() {
             setSourceCode(preinstalled_programs.basic.mandelbrot);
             setDataFetch(true);
             if(urlParams.size>0){
-                openNotification("Invalid Parameter Found.", "bottomRight");
+                openNotification("The URL contains an invalid parameter.", "bottomRight");
             }
         }
     }
