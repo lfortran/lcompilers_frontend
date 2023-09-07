@@ -71,7 +71,7 @@ export default function Home() {
             setDataFetch(true);
         } else if (urlParams.get("gist")) {
             const gistUrl = gist + urlParams.get("gist") + "/raw/";
-            fetch(gistUrl)
+            fetch(gistUrl, {cache: "no-store"})
                 .then((response) => response.text())
                 .then((data) => {
                     setSourceCode(data);
