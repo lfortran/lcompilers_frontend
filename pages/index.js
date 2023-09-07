@@ -63,14 +63,14 @@ export default function Home() {
 
     async function fetchData() {
         const url = window.location.search;
-        const gist = "https://gist.githubusercontent.com/";
+        const gist = "https://json.extendsclass.com/bin/";
         const urlParams = new URLSearchParams(url);
 
         if (urlParams.get("code")) {
             setSourceCode(decodeURIComponent(urlParams.get("code")));
             setDataFetch(true);
         } else if (urlParams.get("gist")) {
-            const gistUrl = gist + urlParams.get("gist") + "/raw/";
+            const gistUrl = gist + urlParams.get("gist");
             fetch(gistUrl, {cache: "no-store"})
                 .then((response) => response.text())
                 .then((data) => {
