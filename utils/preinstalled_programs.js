@@ -63,13 +63,13 @@ end program`,
 end program mandelbrot`
     },
     experimental: {
-        template_add: `module template_add_m
+        template_add: `module template_add_01_m
     implicit none
     private
     public :: add_t
 
     requirement R(T, F)
-        type :: T; end type
+        type, deferred :: T
         function F(x, y) result(z)
             type(T), intent(in) :: x, y
             type(T) :: z
@@ -77,7 +77,7 @@ end program mandelbrot`
     end requirement
 
     template add_t(T, F)
-        requires R(T, F)
+        require :: R(T, F)
         private
         public :: add_generic
     contains
@@ -117,20 +117,20 @@ contains
     end subroutine
 end module
 
-program template_add
-use template_add_m
+program template_add_01
+use template_add_01_m
 implicit none
 
 call test_template()
 
-end program template_add`,
+end program`,
     template_nested: `module template_nested_m
     implicit none
     private
     public :: add_t
 
     requirement R(T, F)
-        type :: T; end type
+        type, deferred :: T
         function F(x, y) result(z)
             type(T), intent(in) :: x, y
             type(T) :: z
@@ -138,7 +138,7 @@ end program template_add`,
     end requirement
 
     template add_t(T, F)
-        requires R(T, F)
+        require :: R(T, F)
         private
         public :: add_generic
     contains
@@ -179,7 +179,7 @@ implicit none
 call test_template()
 
 end program template_nested`,
-    template_travel: `module math
+    template_travel: `module template_travel_01_math
 
     implicit none
     private
@@ -201,17 +201,17 @@ contains
 
 end module
 
-module travel
+module template_travel_01_travel
 
-    use math
+    use template_travel_01_math
     implicit none
     private
     public :: travel_tmpl
 
     requirement operations(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
-        type :: D; end type
-        type :: T; end type
-        type :: S; end type
+        type, deferred :: D
+        type, deferred :: T
+        type, deferred :: S
 
         pure function plus_D(l, r) result(total)
             type(D), intent(in) :: l, R
@@ -237,7 +237,7 @@ module travel
     end requirement
 
     template travel_tmpl(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
-        requires operations(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
+        require :: operations(D, T, S, plus_D, plus_T, D_divided_by_T, D_divided_by_S)
         private
         public :: avg_S_from_T
     contains
@@ -258,10 +258,10 @@ module travel
 
 end module
 
-module template_travel_m
+module template_travel_01_m
 
-    use math
-    use travel
+    use template_travel_01_math
+    use template_travel_01_travel
     implicit none
 
 contains
@@ -280,13 +280,14 @@ contains
 
 end module
 
-program template_travel
-use template_travel_m
+program template_travel_01
+use template_travel_01_m
 implicit none
 
 call test_template()
 
-end program template_travel`,
+end program template_travel_01
+`,
     template_triple: `module Math_integer_m
 
     implicit none
@@ -388,7 +389,7 @@ end program template_travel`,
     public :: triple_tmpl
 
     requirement magma_r(T, plus_T)
-      type :: T; end type
+      type, deferred :: T
 
       pure function plus_T(l, r) result(total)
         type(T), intent(in) :: l, r
@@ -397,7 +398,7 @@ end program template_travel`,
     end requirement
 
     template triple_tmpl(T, plus_T)
-      requires magma_r(T, plus_T)
+      require :: magma_r(T, plus_T)
       private
       public :: triple_l, triple_r
     contains
@@ -471,11 +472,11 @@ end program template_travel`,
     public :: test_template
 
     requirement r(t)
-        type :: t; end type
+        type, deferred :: t
     end requirement
 
     template array_tmpl(t)
-        requires r(t)
+        require :: r(t)
         private
         public :: insert_t
     contains
@@ -552,7 +553,7 @@ module template_array_02b_m
     public :: test_template
 
     requirement operations(t, plus_t, zero_t)
-        type :: t; end type
+        type, deferred :: t
 
         pure function plus_t(l, r) result(rs)
             type(t), intent(in) :: l, r
@@ -566,7 +567,7 @@ module template_array_02b_m
     end requirement
 
     template array_tmpl(t, plus_t, zero_t)
-        requires operations(t, plus_t, zero_t)
+        require :: operations(t, plus_t, zero_t)
         private
         public :: mysum_t
     contains
@@ -604,7 +605,7 @@ program template_array_02b
     call test_template()
 
 end`,
-    template_array_03: `module math
+    template_array_03: `module template_array_03_math
 
     implicit none
     private
@@ -652,14 +653,14 @@ end module
 
 module template_array_03_m
 
-    use math
+    use template_array_03_math
     implicit none
     private
     public :: test_template
 
     requirement operations(t, plus_t, zero_t, mult_t)
 
-        type :: t; end type
+        type, deferred :: t
 
         pure function plus_t(l, r) result(result)
             type(t), intent(in) :: l, r
@@ -680,7 +681,7 @@ module template_array_03_m
 !
     template array_tmpl(t, plus_t, zero_t, mult_t)
 
-        requires operations(t, plus_t, zero_t, mult_t)
+        require :: operations(t, plus_t, zero_t, mult_t)
         private
         public :: mymatmul_t
 
@@ -690,7 +691,7 @@ module template_array_03_m
             integer, parameter, intent(in) :: i, j, k
             type(t), intent(in) :: a(i,j), b(j,k)
             type(t) :: r(i,k)
-            integer, parameter :: x, y, z
+            integer, parameter :: x = 1, y = 1, z = 1
             type(t) :: elem
             do x = 1, i
                 do z = 1, k
@@ -739,11 +740,11 @@ end`,
     public :: reverse_tmpl
 
     requirement default_behavior(t)
-        type :: t; end type
+        type, deferred :: t
     end requirement
 
     template reverse_tmpl(t)
-        requires default_behavior(t)
+        require :: default_behavior(t)
         private
         public :: reverse
     contains
@@ -774,6 +775,8 @@ contains
         a = [1,2,3,4,5]
         call ireverse(a)
         print *, a
+        if (a(1) /= 5) error stop
+        if (a(5) /= 1) error stop
     end subroutine
 
 end module
