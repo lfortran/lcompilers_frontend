@@ -16,11 +16,11 @@ end program`,
     integer :: image(Nx,Ny), image_color(4,Nx,Ny), palette(3,4), i, j, n, idx
     real(dp) :: x, y, x_0, y_0, x_sqr, y_sqr
     interface
-        subroutine show_img(w, h, A) bind(c)
+        subroutine show_img(w, h, A) bind(js)
         integer, intent(in) :: w, h
         integer, intent(in) :: A(w,h)
         end subroutine
-        subroutine show_img_color(w, h, A) bind(c)
+        subroutine show_img_color(w, h, A) bind(js)
         integer, intent(in) :: w, h
         integer, intent(in) :: A(4,w,h)
         end subroutine
