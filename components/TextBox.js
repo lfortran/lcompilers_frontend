@@ -1,6 +1,8 @@
-import { Button, Tabs, Dropdown, Menu, Space } from "antd";
+import { Button, Tabs, Dropdown, Menu, Space } from "antd"; 
 const { TabPane } = Tabs;
-import { DownOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { DownOutlined, PlayCircleOutlined,FullscreenOutlined,FullscreenExitOutlined} from "@ant-design/icons";
+import { useIsMobile } from "./useIsMobile";
+import React, { useState, useEffect } from 'react'; 
 import preinstalled_programs from "../utils/preinstalled_programs";
 import dynamic from 'next/dynamic'
 const Editor = dynamic(import('./Editor'), {
@@ -8,6 +10,24 @@ const Editor = dynamic(import('./Editor'), {
 })
 
 function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight }) {
+    const isMobile = useIsMobile(); 
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
+    // Listen for fullscreen changes (Esc key, browser buttons, etc.)
+    useEffect(() => {
+        const handler = () => setIsFullScreen(!!document.fullscreenElement);
+        document.addEventListener("fullscreenchange", handler);
+        return () => document.removeEventListener("fullscreenchange", handler);
+    }, []);
+
+    const handleFullScreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
     var menu_items = [];
     for (let category in preinstalled_programs) {
         var category_examples = []
@@ -31,27 +51,57 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
 
     const examples_menu = (<Menu items={menu_items}></Menu>);
     const extraOperations = {
-        right: <Button disabled={disabled} onClick={() => handleUserTabChange(activeTab)}> <PlayCircleOutlined /> Run </Button>,
-        left: <Dropdown overlay={examples_menu} trigger="hover">
+        right: (
+            <Space>
+                <Button 
+                    onClick={handleFullScreen} 
+                    icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+                >
+                    {/* Now both text options only show on desktop, keeping mobile clean */}
+                    {!isMobile && (isFullScreen ? " Exit Fullscreen" : " Fullscreen")}
+                </Button>
+                <Button 
+                    disabled={disabled} 
+                    onClick={() => handleUserTabChange(activeTab)}
+                    icon={<PlayCircleOutlined />}
+                > 
+                    Run 
+                </Button>
+            </Space>
+        ),
+        left: (
+            <Dropdown menu={{ items: menu_items }} trigger={["hover"]}>
                 <a onClick={(e) => e.preventDefault()}>
-                    <Space style={{marginRight: "10px"}}>
-                        Examples <DownOutlined />
+                    <Space style={{ marginRight: "10px" }}>
+                        {!isMobile && "Examples"} <DownOutlined />
                     </Space>
                 </a>
             </Dropdown>
+        )
     };
 
-    return (
-        <div className="card-container" style={{height: "100%" }}>
-            <Tabs tabBarExtraContent={extraOperations} style={{ height: "100%" }}>
-                <TabPane tab={`${exampleName}.f90`} key="1" style={{ height: myHeight }}>
+    const tabItems = [
+        {
+            key: '1',
+            label: `${exampleName}.f90`,
+            children: (
+                <div style={{ height: myHeight }}>
                     <Editor
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
                     />
-                </TabPane>
+                </div>
+            ),
+        },
+    ];
 
-            </Tabs>
+    return (
+        <div className="card-container" style={{height: "100%" }}>
+            <Tabs 
+                tabBarExtraContent={extraOperations} 
+                style={{ height: "100%" }} 
+                items={tabItems} 
+            />
         </div>
     );
 }
