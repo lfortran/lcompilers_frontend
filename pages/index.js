@@ -4,11 +4,13 @@ import LoadLFortran from "../components/LoadLFortran";
 import preinstalled_programs from "../utils/preinstalled_programs";
 import { useIsMobile } from "../components/useIsMobile";
 
-import { useState, useEffect } from "react";
-import { Col, Row, Spin } from "antd";
-import { notification } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { useState, useEffect, useRef } from "react";
+import { Col, Row, Spin, notification } from "antd"; // Combined into one line
+import { LoadingOutlined, ShareAltOutlined } from "@ant-design/icons"; // Added Share icon
 import AnsiUp from "ansi_up";
+
+// ONLY add this for Issue #23
+import { decodeSnippet } from "../utils/snippet";
 
 var ansi_up = new AnsiUp();
 
@@ -42,19 +44,25 @@ var lfortran_funcs = {
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
     const [sourceCode, setSourceCode] = useState("");
+    const [sourceUrl, setSourceUrl] = useState("");
     const [exampleName, setExampleName] = useState("main");
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const [dataFetch, setDataFetch] = useState(false);
     const isMobile = useIsMobile();
-
+    const initialized = useRef(false);
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
+    // Consolidated Effect: Handles mounting logic exactly once
     useEffect(() => {
-        setSourceCode("");
-        fetchData();
+        if (!initialized.current) {
+            initialized.current = true;
+            setSourceCode(""); // Clear initial state
+            fetchData(); // Trigger the fetch
+        }
     }, []);
 
+    // Handles the automatic run/tab change once data is ready
     useEffect(() => {
         if(moduleReady && dataFetch) {
             handleUserTabChange("STDOUT");
@@ -62,38 +70,60 @@ export default function Home() {
     }, [moduleReady, dataFetch]);
 
     async function fetchData() {
-        const url = window.location.search;
-        const gist = "https://gist.githubusercontent.com/";
-        const urlParams = new URLSearchParams(url);
+        const urlParams = new URLSearchParams(window.location.search);
+        let downloadUrl = "";
 
-        if (urlParams.get("code")) {
+        // Case 1: Shared Snippet (Issue #23)
+        if (urlParams.get("snippet")) {
+            downloadUrl = decodeSnippet(urlParams.get("snippet"));
+        } 
+        // Case 2: Direct URL Parameter (Direct Raw Link)
+        else if (urlParams.get("url")) {
+            downloadUrl = urlParams.get("url");
+        }
+        // Case 4: Direct Code
+        else if (urlParams.get("code")) {
             setSourceCode(decodeURIComponent(urlParams.get("code")));
+            setSourceUrl(""); 
             setDataFetch(true);
-        } else if (urlParams.get("gist")) {
-            const gistUrl = gist + urlParams.get("gist") + "/raw/";
-            fetch(gistUrl, {cache: "no-store"})
-                .then((response) => response.text())
+            return;
+        }
+
+        // Execution: Fetch only if a downloadUrl was successfully determined
+        if (downloadUrl) {
+            fetch(downloadUrl, { cache: "no-store" })
+                .then((response) => {
+                    if (!response.ok) throw new Error("Fetch failed");
+                    return response.text();
+                })
                 .then((data) => {
                     setSourceCode(data);
+                    setSourceUrl(downloadUrl); // Enable Share button
                     setDataFetch(true);
-                    openNotification(
-                        "Source Code loaded from gist.",
-                        "bottomRight"
-                    );
+                    openNotification("Source Code loaded successfully.", "bottomRight");
                 })
                 .catch((error) => {
-                    console.error("Error fetching data:", error);
-                    openNotification("error fetching .", "bottomRight");
+                    console.error("Fetch error:", error);
+                    // Only one notification will now appear due to the Ref guard
+                    openNotification("Error: Please provide a direct download link.", "bottomRight");
+                    setSourceCode(preinstalled_programs.basic.mandelbrot);
+                    setSourceUrl(""); 
+                    setDataFetch(true);
                 });
-        } else {
+        } 
+        else {
+            // Default behavior if no valid download parameters are present
             setSourceCode(preinstalled_programs.basic.mandelbrot);
+            setSourceUrl(""); 
             setDataFetch(true);
-            if(urlParams.size>0){
+            
+            // Only notify for invalid/unsupported parameters if the URL isn't empty
+            const hasParams = urlParams.keys().next().done === false;
+            if (hasParams && !urlParams.get("code") && !urlParams.get("gist") && !urlParams.get("url") && !urlParams.get("snippet")) {
                 openNotification("The URL contains an invalid parameter.", "bottomRight");
             }
         }
     }
-
     async function handleUserTabChange(key) {
         if (key == "STDOUT") {
             if(sourceCode.trim() === ""){
@@ -144,7 +174,6 @@ export default function Home() {
         } else if (key == "PY") {
             setOutput("Support for PY is not yet enabled");
         } else {
-            console.log("Unknown key:", key);
             setOutput("Unknown key: " + key);
         }
         setActiveTab(key);
@@ -166,6 +195,8 @@ export default function Home() {
                         disabled={!moduleReady}
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
+                        sourceUrl={sourceUrl} // New prop for sharing
+                        setSourceUrl={setSourceUrl} // Allow clearing if code changes manually
                         exampleName={exampleName}
                         setExampleName={setExampleName}
                         activeTab={activeTab}

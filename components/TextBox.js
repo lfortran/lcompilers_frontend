@@ -1,15 +1,24 @@
-import { Button, Tabs, Dropdown, Menu, Space } from "antd"; 
+import { Button, Tabs, Dropdown, Menu, Space, Tooltip, message } from "antd"; 
 const { TabPane } = Tabs;
-import { DownOutlined, PlayCircleOutlined,FullscreenOutlined,FullscreenExitOutlined} from "@ant-design/icons";
+import { 
+    DownOutlined, 
+    PlayCircleOutlined, 
+    FullscreenOutlined, 
+    FullscreenExitOutlined, 
+    ShareAltOutlined 
+} from "@ant-design/icons"; // Combined all icons here
+
 import { useIsMobile } from "./useIsMobile";
 import React, { useState, useEffect } from 'react'; 
 import preinstalled_programs from "../utils/preinstalled_programs";
+import { encodeSnippet } from "../utils/snippet"; 
 import dynamic from 'next/dynamic'
+
 const Editor = dynamic(import('./Editor'), {
   ssr: false
 })
 
-function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight }) {
+function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight,sourceUrl,setSourceUrl }) {
     const isMobile = useIsMobile(); 
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -27,6 +36,30 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
             document.exitFullscreen();
         }
     };
+    const handleShare = () => {
+        // Step 1: Guard against sharing local/manual code without an external source
+        if (!sourceUrl) {
+            message.warning("Only code loaded from an external source (Gist/Snippet) can be shared.");
+            return;
+        }
+
+        // Step 2: Debug log before encoding to ensure the source URL is correct
+        console.log("[Share] Encoding:", sourceUrl); 
+
+        // Step 3: Encode the full raw URL and build a clean base link
+        const hash = encodeSnippet(sourceUrl);
+        const shareLink = `${window.location.origin}?snippet=${hash}`;
+
+        // Step 4: Write to clipboard with success/error feedback
+        navigator.clipboard.writeText(shareLink)
+            .then(() => {
+                message.success("Shareable link copied to clipboard!");
+            })
+            .catch((err) => {
+                console.error("[Share] Clipboard Error:", err);
+                message.error("Failed to copy link.");
+            });
+    };
 
     var menu_items = [];
     for (let category in preinstalled_programs) {
@@ -38,6 +71,7 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
                 onClick: () => {
                     setSourceCode(preinstalled_programs[category][example]);
                     setExampleName(example);
+                    if (setSourceUrl) setSourceUrl(""); // Clear the external URL
                 }
             });
         }
@@ -53,13 +87,24 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
     const extraOperations = {
         right: (
             <Space>
+                {/* Tooltip provides UX context for why the button might be disabled */}
+                <Tooltip title={sourceUrl ? "Share this snippet" : "Load an external source to enable sharing"}>
+                    <Button 
+                        icon={<ShareAltOutlined />} 
+                        onClick={handleShare}
+                        disabled={!sourceUrl} // Ensures sharing only works for external sources
+                    >
+                        {!isMobile && "Share"}
+                    </Button>
+                </Tooltip>
+
                 <Button 
                     onClick={handleFullScreen} 
                     icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                 >
-                    {/* Now both text options only show on desktop, keeping mobile clean */}
                     {!isMobile && (isFullScreen ? " Exit Fullscreen" : " Fullscreen")}
                 </Button>
+
                 <Button 
                     disabled={disabled} 
                     onClick={() => handleUserTabChange(activeTab)}
