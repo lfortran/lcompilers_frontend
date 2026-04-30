@@ -64,11 +64,28 @@ export default function Home() {
     async function fetchData() {
         const url = window.location.search;
         const gist = "https://gist.githubusercontent.com/";
+        const github = "https://raw.githubusercontent.com/";
         const urlParams = new URLSearchParams(url);
 
         if (urlParams.get("code")) {
             setSourceCode(decodeURIComponent(urlParams.get("code")));
             setDataFetch(true);
+        } else if (urlParams.get("github")) {
+            const rawUrl = github + urlParams.get("github");
+            fetch(rawUrl, {cache: "no-store"})
+                .then((response) => response.text())
+                .then((data) => {
+                    setSourceCode(data);
+                    setDataFetch(true);
+                    openNotification(
+                        "Source Code loaded from git.",
+                        "bottomRight"
+                    );
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    openNotification("error fetching .", "bottomRight");
+                });
         } else if (urlParams.get("gist")) {
             const gistUrl = gist + urlParams.get("gist") + "/raw/";
             fetch(gistUrl, {cache: "no-store"})
