@@ -10,13 +10,15 @@ import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import AnsiUp from "ansi_up";
 
+// 1. Persistence Constants
+const STORAGE_KEY = "lfortran_user_code_v1";
+const FALLBACK_CODE = preinstalled_programs.basic.mandelbrot;
+
 var ansi_up = new AnsiUp();
 
 const antIcon = (
     <LoadingOutlined
-        style={{
-            fontSize: 24,
-        }}
+        style={{ fontSize: 24 }}
         spin
     />
 );
@@ -41,17 +43,26 @@ var lfortran_funcs = {
 
 export default function Home() {
     const [moduleReady, setModuleReady] = useState(false);
-    const [sourceCode, setSourceCode] = useState("");
+    
+    // 2. Safe Initializer
+    const [sourceCode, setSourceCode] = useState(() => {
+        if (typeof window === "undefined") return FALLBACK_CODE; 
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved !== null ? saved : FALLBACK_CODE;
+        } catch (e) {
+            return FALLBACK_CODE;
+        }
+    });
+
     const [exampleName, setExampleName] = useState("main");
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const [dataFetch, setDataFetch] = useState(false);
     const isMobile = useIsMobile();
-
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
 
     useEffect(() => {
-        setSourceCode("");
         fetchData();
     }, []);
 
@@ -60,6 +71,24 @@ export default function Home() {
             handleUserTabChange("STDOUT");
         }
     }, [moduleReady, dataFetch]);
+
+    // 3. Debounced Save Hook
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("code") || params.get("gist")) return;
+
+        const timeoutId = setTimeout(() => {
+            try {
+                if (sourceCode && sourceCode !== FALLBACK_CODE) {
+                    localStorage.setItem(STORAGE_KEY, sourceCode);
+                }
+            } catch (e) {
+                console.warn("LFortran: Persistence error", e);
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [sourceCode]);
 
     async function fetchData() {
         const url = window.location.search;
@@ -93,19 +122,17 @@ export default function Home() {
                 .then((data) => {
                     setSourceCode(data);
                     setDataFetch(true);
-                    openNotification(
-                        "Source Code loaded from gist.",
-                        "bottomRight"
-                    );
+                    openNotification("Source Code loaded from gist.", "bottomRight");
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
                 });
         } else {
-            setSourceCode(preinstalled_programs.basic.mandelbrot);
+            // 4. Fallback Protection
+            setSourceCode(prev => (prev && prev !== "") ? prev : FALLBACK_CODE);
             setDataFetch(true);
-            if(urlParams.size>0){
+            if(urlParams.size > 0){
                 openNotification("The URL contains an invalid parameter.", "bottomRight");
             }
         }
@@ -123,15 +150,15 @@ export default function Home() {
             const end_compile = performance.now();
             const duration_compile = end_compile - start_compile;
             sessionStorage.setItem("duration_compile", duration_compile);
+
             if (wasm_bytes_response) {
                 const [exit_code, ...compile_result] = wasm_bytes_response.split(",");
                 if (exit_code !== "0") {
-                     // print compile-time error found by lfortran to output
                     setOutput(ansi_up.ansi_to_html(compile_result) + `\nCompilation Time: ${duration_compile} ms`);
                 }
                 else {
                     var stdout = [];
-                    const exec_res = await lfortran_funcs.execute_code(
+                    await lfortran_funcs.execute_code(
                         new Uint8Array(compile_result),
                         (text) => stdout.push(text)
                     );
@@ -140,28 +167,19 @@ export default function Home() {
             }
         } else if (key == "AST") {
             const res = lfortran_funcs.emit_ast_from_source(sourceCode);
-            if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
-            }
+            if (res) setOutput(ansi_up.ansi_to_html(res));
         } else if (key == "ASR") {
             const res = lfortran_funcs.emit_asr_from_source(sourceCode);
-            if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
-            }
+            if (res) setOutput(ansi_up.ansi_to_html(res));
         } else if (key == "WAT") {
             const res = lfortran_funcs.emit_wat_from_source(sourceCode);
-            if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
-            }
+            if (res) setOutput(ansi_up.ansi_to_html(res));
         } else if (key == "CPP") {
             const res = lfortran_funcs.emit_cpp_from_source(sourceCode);
-            if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
-            }
+            if (res) setOutput(ansi_up.ansi_to_html(res));
         } else if (key == "PY") {
             setOutput("Support for PY is not yet enabled");
         } else {
-            console.log("Unknown key:", key);
             setOutput("Unknown key: " + key);
         }
         setActiveTab(key);
