@@ -19,6 +19,8 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0",
     "eslint": "8.18.0",
     "eslint-config-next": "12.1.6"
   }
