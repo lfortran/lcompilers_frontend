@@ -788,4 +788,24 @@ end program`
     }
 }
 
+export const CATEGORIZED_PROGRAMS = {
+    "Basic": [
+        { id: "mandelbrot", name: "Mandelbrot", code: preinstalled_programs.basic.mandelbrot },
+        { id: "expr2", name: "Simple Expression", code: preinstalled_programs.basic.expr2 }
+    ],
+    "Experimental": [
+        { id: "template_add", name: "Template Add", code: preinstalled_programs.experimental.template_add },
+        { id: "template_nested", name: "Nested Templates", code: preinstalled_programs.experimental.template_nested },
+        { id: "template_travel", name: "Template Travel", code: preinstalled_programs.experimental.template_travel },
+        { id: "template_triple", name: "Template Triple", code: preinstalled_programs.experimental.template_triple },
+        { id: "template_array_01b", name: "Template Array 01b", code: preinstalled_programs.experimental.template_array_01b },
+        { id: "template_array_02b", name: "Template Array 02b", code: preinstalled_programs.experimental.template_array_02b },
+        { id: "template_array_03", name: "Template Array 03", code: preinstalled_programs.experimental.template_array_03 },
+        { id: "template_array_04", name: "Array Reverse", code: preinstalled_programs.experimental.template_array_04 }
+    ]
+};
+
+// This ensures your selection logic can find all the new entries
+export const ALL_PROGRAMS = Object.values(CATEGORIZED_PROGRAMS).flat();
+
 export default preinstalled_programs;

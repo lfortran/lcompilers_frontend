@@ -9,7 +9,7 @@ const Editor = dynamic(import('./Editor'), {
   ssr: false
 })
 
-function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight }) {
+function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight,handleExampleChange,CATEGORIZED_PROGRAMS = {} }) {
     const isMobile = useIsMobile(); 
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -28,28 +28,20 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
         }
     };
 
-    var menu_items = [];
-    for (let category in preinstalled_programs) {
-        var category_examples = []
-        for (let example in preinstalled_programs[category]) {
-            category_examples.push({
-                key: example,
-                label: example,
-                onClick: () => {
-                    setSourceCode(preinstalled_programs[category][example]);
-                    setExampleName(example);
-                }
-            });
-        }
-
-        menu_items.push({
+    const menu_items = Object.entries(CATEGORIZED_PROGRAMS || {}).map(([category, programs]) => {
+        return {
             key: category,
             label: category,
-            children: category_examples
-        });
-    }
-
-    const examples_menu = (<Menu items={menu_items}></Menu>);
+            children: (programs || []).map(prog => ({
+                key: prog.id,
+                label: prog.name,
+                onClick: () => {
+                    handleExampleChange(prog.id);
+                    setExampleName(prog.name);
+                }
+            }))
+        };
+    });
     const extraOperations = {
         right: (
             <Space>
@@ -70,10 +62,14 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
             </Space>
         ),
         left: (
-            <Dropdown menu={{ items: menu_items }} trigger={["hover"]}>
+            <Dropdown 
+                menu={{ items: menu_items }} 
+                trigger={["hover"]}
+            >
                 <a onClick={(e) => e.preventDefault()}>
-                    <Space style={{ marginRight: "10px" }}>
-                        {!isMobile && "Examples"} <DownOutlined />
+                    <Space style={{ marginRight: "10px", cursor: "pointer" }}>
+                        {!isMobile && <span style={{ fontWeight: 500 }}>Examples</span>} 
+                        <DownOutlined />
                     </Space>
                 </a>
             </Dropdown>
