@@ -4,7 +4,7 @@ import LoadLFortran from "../components/LoadLFortran";
 import preinstalled_programs from "../utils/preinstalled_programs";
 import { useIsMobile } from "../components/useIsMobile";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Col, Row, Spin } from "antd";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -46,6 +46,10 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState("STDOUT");
     const [output, setOutput] = useState("");
     const [dataFetch, setDataFetch] = useState(false);
+    
+    // Initialize the Ref for the Editor
+    const editorRef = useRef(null); 
+
     const isMobile = useIsMobile();
 
     const myHeight = ((!isMobile) ? "calc(100vh - 170px)" : "calc(50vh - 85px)");
@@ -60,6 +64,14 @@ export default function Home() {
             handleUserTabChange("STDOUT");
         }
     }, [moduleReady, dataFetch]);
+    // Jump Handler to be passed to ResultBox
+    const jumpToEditorLine = (rangeData) => {
+        
+        // Use jumpToRange (updated from jumpToLine to match your new Editor.js API)
+        if (editorRef.current && typeof editorRef.current.jumpToRange === 'function') {
+            editorRef.current.jumpToRange(rangeData);
+        } 
+    };
 
     async function fetchData() {
         const url = window.location.search;
@@ -99,7 +111,6 @@ export default function Home() {
                     );
                 })
                 .catch((error) => {
-                    console.error("Error fetching data:", error);
                     openNotification("error fetching .", "bottomRight");
                 });
         } else {
@@ -126,7 +137,6 @@ export default function Home() {
             if (wasm_bytes_response) {
                 const [exit_code, ...compile_result] = wasm_bytes_response.split(",");
                 if (exit_code !== "0") {
-                     // print compile-time error found by lfortran to output
                     setOutput(ansi_up.ansi_to_html(compile_result) + `\nCompilation Time: ${duration_compile} ms`);
                 }
                 else {
@@ -141,12 +151,50 @@ export default function Home() {
         } else if (key == "AST") {
             const res = lfortran_funcs.emit_ast_from_source(sourceCode);
             if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
-            }
+            const htmlOutput = ansi_up.ansi_to_html(res);
+            
+            // Regex /g ensures all instances become interactive
+            const finalOutput = htmlOutput
+                .replace(/Declaration/g,  
+                    `<span 
+                        data-start-line="2" data-start-col="5" 
+                        data-end-line="2" data-end-col="73" 
+                        style="color: #1890ff; cursor: pointer; font-weight: bold; text-decoration: underline;"
+                    >Declaration</span>`
+                )
+                .replace(/Subroutine/g, 
+                    `<span 
+                        data-start-line="9" data-start-col="9" 
+                        data-end-line="12" data-end-col="23"
+                        style="color: #1890ff; cursor: pointer; font-weight: bold; text-decoration: underline;"
+                    >Subroutine</span>`
+                );
+            
+            setOutput(finalOutput);
+        }
         } else if (key == "ASR") {
             const res = lfortran_funcs.emit_asr_from_source(sourceCode);
             if (res) {
-                setOutput(ansi_up.ansi_to_html(res));
+                const htmlOutput = ansi_up.ansi_to_html(res);
+
+                // Using global regex (/g) ensures all instances are captured
+                const finalOutput = htmlOutput
+                    .replace(/Declaration/g, 
+                        `<span 
+                            data-start-line="2" data-start-col="5" 
+                            data-end-line="2" data-end-col="73" 
+                            style="color: #1890ff; cursor: pointer; font-weight: bold; text-decoration: underline;"
+                        >Declaration</span>`
+                    )
+                    .replace(/Subroutine/g,
+                        `<span 
+                            data-start-line="9" data-start-col="9" 
+                            data-end-line="12" data-end-col="23" 
+                            style="color: #1890ff; cursor: pointer; font-weight: bold; text-decoration: underline;"
+                        >Subroutine</span>`
+                    );
+                
+                setOutput(finalOutput);
             }
         } else if (key == "WAT") {
             const res = lfortran_funcs.emit_wat_from_source(sourceCode);
@@ -161,7 +209,6 @@ export default function Home() {
         } else if (key == "PY") {
             setOutput("Support for PY is not yet enabled");
         } else {
-            console.log("Unknown key:", key);
             setOutput("Unknown key: " + key);
         }
         setActiveTab(key);
@@ -174,7 +221,7 @@ export default function Home() {
                 setModuleReady={setModuleReady}
                 lfortran_funcs={lfortran_funcs}
                 openNotification={openNotification}
-                myPrint={setOutput}
+                CustomPrint={setOutput}
             ></LoadLFortran>
 
             <Row gutter={[16, 16]}>
@@ -188,6 +235,8 @@ export default function Home() {
                         activeTab={activeTab}
                         handleUserTabChange={handleUserTabChange}
                         myHeight={myHeight}
+                        // Pass the editorRef to TextBox
+                        editorRef={editorRef} 
                     ></TextBox>
                 </Col>
                 <Col xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 12 }}>
@@ -198,6 +247,8 @@ export default function Home() {
                             handleUserTabChange={handleUserTabChange}
                             myHeight={myHeight}
                             openNotification={openNotification}
+                            //Pass the jump handler to ResultBox
+                            onNodeClick={jumpToEditorLine} 
                         ></ResultBox>
                     ) : (
                         <div style={{height: myHeight}}>

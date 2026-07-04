@@ -1,19 +1,19 @@
 import { Button, Tabs, Dropdown, Menu, Space } from "antd"; 
 const { TabPane } = Tabs;
-import { DownOutlined, PlayCircleOutlined,FullscreenOutlined,FullscreenExitOutlined} from "@ant-design/icons";
+import { DownOutlined, PlayCircleOutlined, FullscreenOutlined, FullscreenExitOutlined } from "@ant-design/icons";
 import { useIsMobile } from "./useIsMobile";
 import React, { useState, useEffect } from 'react'; 
 import preinstalled_programs from "../utils/preinstalled_programs";
 import dynamic from 'next/dynamic'
-const Editor = dynamic(import('./Editor'), {
-  ssr: false
-})
 
-function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight }) {
+const Editor = dynamic(() => import('./Editor'), {
+    ssr: false,
+});
+
+function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleName, activeTab, handleUserTabChange, myHeight, editorRef }) {
     const isMobile = useIsMobile(); 
     const [isFullScreen, setIsFullScreen] = useState(false);
 
-    // Listen for fullscreen changes (Esc key, browser buttons, etc.)
     useEffect(() => {
         const handler = () => setIsFullScreen(!!document.fullscreenElement);
         document.addEventListener("fullscreenchange", handler);
@@ -49,7 +49,6 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
         });
     }
 
-    const examples_menu = (<Menu items={menu_items}></Menu>);
     const extraOperations = {
         right: (
             <Space>
@@ -57,7 +56,6 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
                     onClick={handleFullScreen} 
                     icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                 >
-                    {/* Now both text options only show on desktop, keeping mobile clean */}
                     {!isMobile && (isFullScreen ? " Exit Fullscreen" : " Fullscreen")}
                 </Button>
                 <Button 
@@ -89,6 +87,7 @@ function TextBox({ disabled, sourceCode, setSourceCode, exampleName, setExampleN
                     <Editor
                         sourceCode={sourceCode}
                         setSourceCode={setSourceCode}
+                        editorRef={editorRef}// Pass the ref to the Editor
                     />
                 </div>
             ),

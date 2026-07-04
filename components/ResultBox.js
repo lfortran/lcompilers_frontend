@@ -4,21 +4,42 @@ import { Button } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { Segmented } from "antd";
 
-function ResultBox({ activeTab, output, handleUserTabChange, myHeight, openNotification }) {
+//  onNodeClick to props
+function ResultBox({ activeTab, output, handleUserTabChange, myHeight, openNotification, onNodeClick }) {
     const isMobile = useIsMobile();
     const [showCopy, setShowCopy] = useState(false);
+
+    const handleOutputClick = (e) => {
+        //  .closest to handle nested spans
+        const target = e.target.closest("[data-start-line]");
+        
+        if (target) {
+            const rangeData = {
+                startLine: parseInt(target.getAttribute("data-start-line")),
+                startCol: parseInt(target.getAttribute("data-start-col")),
+                endLine: parseInt(target.getAttribute("data-end-line")),
+                endCol: parseInt(target.getAttribute("data-end-col"))
+            };
+
+            if (onNodeClick) {
+                onNodeClick(rangeData);
+            } 
+        } 
+    };
+
     function copyTextToClipboard(e) {
-        e.stopPropagation(); // Prevents the click from reaching the container below
+        e.stopPropagation(); 
         const parser = new DOMParser();
         const doc = parser.parseFromString(output, 'text/html');
         navigator.clipboard.writeText(doc.documentElement.textContent);
         openNotification(`${activeTab} output copied`, "bottomRight");
-        setShowCopy(false); // Hide the icon after the user copies the text
+        setShowCopy(false);
     }
+
     return (
         <div 
             className="card-container" 
-            onClick={() => isMobile && setShowCopy(!showCopy)} // Only toggle if on mobile
+            onClick={() => isMobile && setShowCopy(!showCopy)} 
         >
             <Segmented
                 block
@@ -33,10 +54,10 @@ function ResultBox({ activeTab, output, handleUserTabChange, myHeight, openNotif
                     position: "absolute", 
                     right: "40px", 
                     top: "80px",
-                    // If not mobile, always show (opacity 1). If mobile, follow state.
                     opacity: !isMobile || showCopy ? 1 : 0, 
                     pointerEvents: !isMobile || showCopy ? "auto" : "none",
-                    transition: "opacity 0.2s ease-in-out"
+                    transition: "opacity 0.2s ease-in-out",
+                    zIndex: 10 // Ensure copy button stays above clickable spans
                 }}
             >
                 <CopyOutlined />
@@ -44,6 +65,8 @@ function ResultBox({ activeTab, output, handleUserTabChange, myHeight, openNotif
             <pre style={{ margin: "0px", height: myHeight, overflow: "scroll", border: "1px solid black" }}>
                 <div 
                     id="outputBox" 
+                    //  Attach the click listener to the container
+                    onClick={handleOutputClick}
                     style={{ minHeight: "100%", fontSize: "0.9em", padding: "10px" }} 
                     dangerouslySetInnerHTML={{ __html: output }}
                 >
