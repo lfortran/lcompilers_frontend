@@ -66,7 +66,7 @@ end program mandelbrot`
         template_add: `module template_add_01_m
     implicit none
     private
-    public :: add_t
+    public :: add_t, test_template
 
     requirement R(T, F)
         type, deferred :: T
@@ -127,7 +127,7 @@ end program`,
     template_nested: `module template_nested_m
     implicit none
     private
-    public :: add_t
+    public :: add_t, test_template
 
     requirement R(T, F)
         type, deferred :: T
@@ -336,7 +336,7 @@ end program template_travel_01
 
     implicit none
     private
-    public :: add_real
+    public :: add_real, minus_real, max_real
 
   contains
 
@@ -737,7 +737,7 @@ end`,
     template_array_04: `module reverse_m
     implicit none
     private
-    public :: reverse_tmpl
+    public :: reverse_tmpl, test_reverse
 
     requirement default_behavior(t)
         type, deferred :: t
